@@ -53,5 +53,22 @@ def get_local_ip(server_ip="8.8.8.8"):
     s.close()
     return ip
 
+def proxy(port):
+    loopback = "127.0.0.1"
+    s = open_server(loopback, port)
+    c, _ = s.accept()
+    c.settimeout(2.0)
+
+    try:
+        while True:
+            print(c.recv(50000))
+            c.send(b"X" * 5000)     # 너무 많은 데이터를 보내면 sniff 에서 중요한 패킷을 놓칠 수 있음.
+    except socket.timeout:
+        pass
+    except: # ConnectionResetError
+        pass
+
+    c.close()
+
 if __name__ == "__main__":
     pass
