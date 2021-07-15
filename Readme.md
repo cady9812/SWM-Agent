@@ -1,5 +1,5 @@
 # Usage
 ```bash
 mkdir tmp
-sudo python main.py
+sudo python3 main.py
 ```

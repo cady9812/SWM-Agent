@@ -1,4 +1,5 @@
 from scapy.all import *
+from ordered_set import OrderedSet as oSet
 
 loopback = "127.0.0.1"
 
@@ -13,14 +14,18 @@ def local_sniffer(port, queue, timeout = 10.0):
                 return True
         return False
 
+    def start():
+        queue.put("START")
+
     result = sniff(
         lfilter = checker,
         timeout = 10.0,
         iface = get_loopback_iface_name(),  # iface 를 lo로 안주면 loopback에서 오가는 패킷들을 아예 잡지 못하는 것 같음.
+        started_callback = start,
     )
 
-    msg_set = set()
-    print(result)
+    # 패킷의 순서를 보존하기 위해서 ordered_set 을 사용.
+    msg_set = oSet()
     for pkt in result:
         # Ether / IP / TCP|UDP / Data
         # 만약 Ether 나 IP 등이 없는 패킷이 있다면 미탐이 발생할 수 있다.
@@ -42,6 +47,17 @@ def get_loopback_iface_name():
     for x, y in ifaces.items():
         if y.ip == loopback:
             return x
+
+def send_msg_with_ip(target_ip, target_port, msg_list):
+    for msg in msg_list:
+        pkt = Ether() / IP() / TCP() / Raw(msg)
+        pkt[IP].dst = target_ip # src 는 자동으로 생성됨
+        pkt[TCP].dport = target_port
+        pkt[TCP].sport = 60000  # 임의의 포트
+        sendp(pkt)
+        pkt.show()
+        print("sended", bytes(pkt))
+
 
 
 if __name__ == "__main__":

@@ -61,7 +61,7 @@ def proxy(port):
 
     try:
         while True:
-            print(c.recv(50000))
+            c.recv(50000)
             c.send(b"X" * 5000)     # 너무 많은 데이터를 보내면 sniff 에서 중요한 패킷을 놓칠 수 있음.
     except socket.timeout:
         pass
