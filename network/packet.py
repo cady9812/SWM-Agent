@@ -25,6 +25,7 @@ def local_sniffer(port, queue, timeout = 10.0):
     )
 
     # 패킷의 순서를 보존하기 위해서 ordered_set 을 사용.
+    # 그럴 것 같지는 않지만, 보안 장비가 패킷 사이의 
     msg_set = oSet()
     for pkt in result:
         # Ether / IP / TCP|UDP / Data
@@ -40,6 +41,7 @@ def local_sniffer(port, queue, timeout = 10.0):
     queue.put(msg_set)
     return
 
+
 # scapy 에서 필요한 loopback 인터페이스 이름의 구해줌.
 # 리눅스 / 윈도우 호환 가능
 # netifaces 를 이용한 경우와 결과가 다르기 때문에, scapy 에서 지원하는 ifaces 를 사용해야 함.
@@ -48,16 +50,16 @@ def get_loopback_iface_name():
         if y.ip == loopback:
             return x
 
+
+# send_msg_with_ip 는 타겟IP:타겟PORT 로 msg_list 에 있는 메시지들을 패킷으로 구성하여 send함
 def send_msg_with_ip(target_ip, target_port, msg_list):
     for msg in msg_list:
-        pkt = Ether() / IP() / TCP() / Raw(msg)
+        pkt = IP() / TCP() / Raw(msg)
         pkt[IP].dst = target_ip # src 는 자동으로 생성됨
         pkt[TCP].dport = target_port
-        pkt[TCP].sport = 60000  # 임의의 포트
-        sendp(pkt)
-        pkt.show()
+        pkt[TCP].sport = 65535  # 임의의 포트
+        send(pkt)
         print("sended", bytes(pkt))
-
 
 
 if __name__ == "__main__":

