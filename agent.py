@@ -65,8 +65,23 @@ class CommandProcessor(object):
         self.signature = b"BAScope"
         self.id = id
 
-    def report_server(self):
-        return self.server + self.report + str(self.id)
+    def reporter(self, msg):
+        ty = self.cmd["type"]
+
+        if ty == "attack_secu" or ty == "defense":
+            payload = msg["pkts"]
+            report_url = self.server + self.report + str(self.id)
+
+            # 패킷이 byte stream 이기 때문에, base64 로 인코딩하여 전송함
+            en_msg_list = list(map(base64.b64encode, payload))
+
+            data = {
+                "pkts": en_msg_list,   # packet array with BAScope
+            }
+
+            # ip:port/report/<id> 로 정보 전달
+            requests.post(report_url, json = data)
+
 
     def run(self):
         cmd = self.cmd
@@ -121,19 +136,25 @@ class CommandProcessor(object):
             # ip:port 로 패킷을 보냄
             packet.send_msg_with_ip(target_ip, target_port, msg_list)
 
-            # 결과를 서버에 리포트
-            report_url = self.report_server()
-            en_msg_list = list(map(base64.b64encode, msg_list))
-            data = {
-                "pkts": en_msg_list,   # packet array with BAScope
-            }
-
-            requests.post(report_url, json = data)
+            # 서버로 패킷 정보를 보내줌
+            self.reporter({"pkts": msg_list})
 
         # 방어 agent 로 동작
         elif cmd["type"] == "defense":
-            pass
+            msg_list = packet.signature_sniffer()
+
+            # 서버로 패킷 정보를 보내줌
+            self.reporter({"pkts": msg_list})
 
         else:
             print("non implemented")
             exit(1)
+
+# For debug
+if __name__ == "__main__":
+    defense = {
+        "type": "defense",
+    }
+
+    cp = CommandProcessor(defense, "http://0.0.0.0:9000/", 1)
+    cp.run()
