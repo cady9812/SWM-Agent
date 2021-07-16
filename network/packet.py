@@ -52,7 +52,6 @@ def signature_sniffer(signature = "BAScope"):
         timeout = 20.0,
         filter = "ip",
         lfilter = signature_checker,
-        prn = lambda x: x.show(),
     )
 
     received_list = []
