@@ -41,6 +41,24 @@ def local_sniffer(port, queue, timeout = 10.0):
     queue.put(msg_set)
     return
 
+# signature 로 끝나는 패킷만 캡쳐하여 리턴함
+def signature_sniffer(signature = "BAScope"):
+    b_signature = signature.encode()
+
+    signature_checker = lambda pkt: bytes(pkt).endswith(b_signature)
+
+    result = sniff(
+        timeout = 20.0,
+        filter = "ip",
+        lfilter = signature_checker
+    )
+
+    received_list = []
+    for pkt in result:
+        assert 3 < len(pkt.layers())    # Eth/IP/TCP/Raw
+        received_list.append(pkt[3])
+    
+    return received_list
 
 # scapy 에서 필요한 loopback 인터페이스 이름의 구해줌.
 # 리눅스 / 윈도우 호환 가능
