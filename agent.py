@@ -38,7 +38,7 @@ class Agent(object):
 
             if cmd['type'] != "no command":
                 break
-            sleep(1)
+            sleep(2)
 
         # json 형태의 cmd 를 처리하고,
         # 서버로 결과를 보고함
