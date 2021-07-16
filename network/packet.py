@@ -47,6 +47,7 @@ def signature_sniffer(signature = "BAScope"):
 
     signature_checker = lambda pkt: bytes(pkt).endswith(b_signature)
 
+    # 공격에 소요되는 시간, 패킷을 받는 시간을 고려하여 20초 동안 sniff 를 함
     result = sniff(
         timeout = 20.0,
         filter = "ip",
@@ -83,4 +84,4 @@ def send_msg_with_ip(target_ip, target_port, msg_list):
 
 
 if __name__ == "__main__":
-    print(sniffer(445))
+    print(local_sniffer(445))
