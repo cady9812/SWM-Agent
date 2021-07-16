@@ -34,12 +34,11 @@ class Agent(object):
         # 이 작업말고는 할 일이 없기 때문에, 멀티쓰레딩으로 구현하지 않음
         while True:
             cmd = requests.get(url).text
+            cmd = json.loads(cmd)
 
-            if "type" in cmd:
+            if cmd['type'] != "no command":
                 break
             sleep(1)
-
-        cmd = json.loads(cmd)
 
         # json 형태의 cmd 를 처리하고,
         # 서버로 결과를 보고함
@@ -133,7 +132,6 @@ class CommandProcessor(object):
 
         # 방어 agent 로 동작
         elif cmd["type"] == "defense":
-            
             pass
 
         else:
