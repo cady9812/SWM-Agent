@@ -1,4 +1,4 @@
-from network import utility, packet
+from network import utility, packet, scanner
 import json
 from time import sleep
 import requests
@@ -62,6 +62,7 @@ class CommandProcessor(object):
         self.server = server
         self.path = "tmp/ex.py"
         self.report = "report/"
+        self.scan = "scan/result"
         self.signature = b"BAScope"
         self.id = id
 
@@ -81,6 +82,12 @@ class CommandProcessor(object):
 
             # ip:port/report/<id> 로 정보 전달
             requests.post(report_url, json = data)
+
+        elif ty == "scan":
+            scan_report = msg
+            scan_url = self.server + self.scan
+
+            requests.post(scan_url, json = scan_report)
 
 
     def run(self):
@@ -146,9 +153,21 @@ class CommandProcessor(object):
             # 서버로 패킷 정보를 보내줌
             self.reporter({"pkts": msg_list})
 
+
+        # 스캔 모드
+        elif cmd["type"] == "scan":
+            target_ip = cmd["target_ip"]
+            res = scanner.nmap_target(target_ip, "-A")
+            res = scanner.nmap_parser(res)
+
+            # 서버로 target 에 대한 nmap 결과를 보내줌
+            self.reporter(res)
+
+
         else:
             print("non implemented")
             exit(1)
+
 
 # For debug
 if __name__ == "__main__":
@@ -156,5 +175,10 @@ if __name__ == "__main__":
         "type": "defense",
     }
 
-    cp = CommandProcessor(defense, "http://0.0.0.0:9000/", 1)
+    scan = {
+        "type": "scan",
+        "target_ip": "localhost",
+    }
+
+    cp = CommandProcessor(scan, "http://0.0.0.0:9000/", 1)
     cp.run()
