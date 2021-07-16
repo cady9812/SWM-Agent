@@ -50,13 +50,15 @@ def signature_sniffer(signature = "BAScope"):
     result = sniff(
         timeout = 20.0,
         filter = "ip",
-        lfilter = signature_checker
+        lfilter = signature_checker,
+        prn = lambda x: x.show(),
     )
 
     received_list = []
     for pkt in result:
         assert 3 < len(pkt.layers())    # Eth/IP/TCP/Raw
-        received_list.append(pkt[3])
+        payload = bytes(pkt[3])
+        received_list.append(payload)
     
     return received_list
 
