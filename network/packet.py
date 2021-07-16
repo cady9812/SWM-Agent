@@ -59,7 +59,7 @@ def send_msg_with_ip(target_ip, target_port, msg_list):
         pkt[TCP].dport = target_port
         pkt[TCP].sport = 65535  # 임의의 포트
         send(pkt)
-        print("sended", bytes(pkt))
+        # print("sended", bytes(pkt))
 
 
 if __name__ == "__main__":

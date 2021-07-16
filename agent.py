@@ -4,6 +4,7 @@ from time import sleep
 import requests
 from multiprocessing import Process, Queue
 import subprocess
+import base64
 
 """
 <API 명세서>
@@ -18,9 +19,15 @@ class Agent(object):
         self.ip = utility.get_local_ip()
         self.server = server
         self.agent_info = "agent/info"
+        self.command = "command/"
+        self.id = -1
 
-    def run(self):
-        url = self.server + self.agent_info
+    def info_path(self):
+        return self.server + self.agent_info
+
+    def run(self, response):
+        self.id = json.loads(response)['agent_id']
+        url = self.server + self.command + str(self.id)
         cmd = ''
 
         # 서버에 1초마다 반복적으로 요청을 날리고, type 이라는 문자가 들어간 응답이 있는 경우에 멈춤
@@ -34,8 +41,9 @@ class Agent(object):
 
         cmd = json.loads(cmd)
 
-        # json 형태의 cmd 를 처리하기 위한 객체
-        cp = CommandProcessor(cmd)
+        # json 형태의 cmd 를 처리하고,
+        # 서버로 결과를 보고함
+        cp = CommandProcessor(cmd, self.server, self.id)
         cp.run()
 
     def set_path(self, path):
@@ -50,16 +58,22 @@ def cmd_after_replacement(usage, replacements):
 
 # 서버로부터 받은 명령을 처리하기 위한 클래스 (attack / defense)
 class CommandProcessor(object):
-    def __init__(self, cmd):
+    def __init__(self, cmd, server, id):
         self.cmd = cmd
+        self.server = server
         self.path = "tmp/ex.py"
+        self.report = "report/"
         self.signature = b"BAScope"
-    
+        self.id = id
+
+    def report_server(self):
+        return self.server + self.report + str(self.id)
+
     def run(self):
         cmd = self.cmd
 
         # 공격 agent (보안장비 모드)로 동작
-        if cmd["type"] == "attack":
+        if cmd["type"] == "attack_secu":
             localhost = "127.0.0.1"
             link = cmd['download']  # 공격 코드 다운로드 링크
             target_ip = cmd['target_ip']
@@ -91,7 +105,7 @@ class CommandProcessor(object):
             replacements = [
                 ("<FILE>", self.path),
                 ("<IP>", localhost),
-                ("<POTR>", str(target_port))
+                ("<PORT>", str(target_port))
             ]
             usage = cmd_after_replacement(cmd['usage'], replacements)
             subprocess.call(usage, shell=True)
@@ -108,10 +122,18 @@ class CommandProcessor(object):
             # ip:port 로 패킷을 보냄
             packet.send_msg_with_ip(target_ip, target_port, msg_list)
 
+            # 결과를 서버에 리포트
+            report_url = self.report_server()
+            en_msg_list = list(map(base64.b64encode, msg_list))
+            data = {
+                "pkts": en_msg_list,   # packet array with BAScope
+            }
+
+            requests.post(report_url, json = data)
 
         # 방어 agent 로 동작
         elif cmd["type"] == "defense":
-
+            
             pass
 
         else:
