@@ -158,10 +158,10 @@ class CommandProcessor(object):
         elif cmd["type"] == "scan":
             target_ip = cmd["target_ip"]
             res = scanner.nmap_target(target_ip, "-A")
-            res = scanner.nmap_parser(res)
+            parsed_res = scanner.nmap_parser(res)
 
             # 서버로 target 에 대한 nmap 결과를 보내줌
-            self.reporter(res)
+            self.reporter(parsed_res)
 
 
         else:

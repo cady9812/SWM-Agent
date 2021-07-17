@@ -22,6 +22,8 @@ def nmap_parser(xml_content):
     # json 형태로 바꿔 변수에 저장
     str_content = json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True)
     json_content = json.loads(str_content)
+    # print(json_content)
+
     json_data = json_content["nmaprun"]["host"]["ports"]
     json_data = json_data["port"]
     res = []
@@ -33,23 +35,37 @@ def nmap_parser(xml_content):
 
     for data in json_data:
         d = {}
-        if "@portid" in data.keys():
-            d["port"]=data["@portid"]
-        if "@protocol" in data.keys():
-            d["protocol"]=data["@protocol"]
-        if "service" in data.keys():
+        if "@portid" in data:
+            d["port"] = data["@portid"]
+        if "@protocol" in data:
+            d["protocol"] = data["@protocol"]
+        if "service" in data:
             if "@name" in data["service"]:
                 d["service_name"] = data["service"]["@name"]
             if "@product" in data["service"]:
                 d["service_product"] = data["service"]["@product"]
             if "@version" in data["service"]:
                 d["service_version"] = data["service"]["@version"]
+        # 구체적인 프로그램 정보
+        if "script" in data:
+            ids = data["script"]
+
+            if isinstance(ids, dict):   # @id 가 하나만 나왔을 경우에 대비
+                ids = [ ids ]
+
+            for item in ids:
+                if item.get('@id') == "http-generator":
+                    if '@output' in item:
+                        # e.g. "WordPress 5.7.2"
+                        # ' ' 을 기준으로 프로그램과 버전을 나눌까..?
+                        d["program_name"] = item["@output"]
+
         res.append(d)
     
     return res
 
 # For debug
 if __name__ == "__main__":
-    a = nmap_target("localhost", "-A", "-p 12345,80")
+    a = nmap_target("localhost", "-A", "-p 8000")
     res = nmap_parser(a)
     print(res)
