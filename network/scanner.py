@@ -46,6 +46,11 @@ def nmap_parser(xml_content):
                 d["service_product"] = data["service"]["@product"]
             if "@version" in data["service"]:
                 d["service_version"] = data["service"]["@version"]
+
+            # open, filtered, closed, open | filtered
+            if "@state" in data["state"]:
+                d["state"] = data["state"]["@state"]
+
         # 구체적인 프로그램 정보
         if "script" in data:
             ids = data["script"]
