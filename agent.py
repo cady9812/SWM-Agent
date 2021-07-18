@@ -157,7 +157,8 @@ class CommandProcessor(object):
         # 스캔 모드
         elif cmd["type"] == "scan":
             target_ip = cmd["target_ip"]
-            res = scanner.nmap_target(target_ip, "-A")
+            # windows 같은 경우 디폴트로 ping 이 먹히지 않기 때문에, -Pn 옵션을 사용
+            res = scanner.nmap_target(target_ip, "-A", "-Pn")
             parsed_res = scanner.nmap_parser(res)
 
             # 서버로 target 에 대한 nmap 결과를 보내줌

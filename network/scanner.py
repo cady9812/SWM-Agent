@@ -66,6 +66,6 @@ def nmap_parser(xml_content):
 
 # For debug
 if __name__ == "__main__":
-    a = nmap_target("localhost", "-A", "-p 8000")
+    a = nmap_target("172.30.1.26", "-A", "-Pn", "-p 445")
     res = nmap_parser(a)
     print(res)
