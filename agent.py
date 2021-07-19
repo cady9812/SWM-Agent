@@ -92,7 +92,7 @@ class CommandProcessor(object):
 
     def run(self):
         cmd = self.cmd
-
+###
         # 공격 agent (보안장비 모드)로 동작
         if cmd["type"] == "attack_secu":
             localhost = "127.0.0.1"
