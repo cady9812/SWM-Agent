@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 # usage: nmap_target("localhost", "-A", "-p 8000,22,90,445")
 def nmap_target(target, *options):
     SUCCESS = 0
+    logger.info(f"nmap start: {target}, {options}")
     result = ''
     nm = NmapProcess(target, options = ' '.join(options))
     v = nm.run()
@@ -74,6 +75,7 @@ def nmap_parser(xml_content):
 
         res.append(d)
     
+    logger.info(f"nmap result: {d}")
     return res
 
 # For debug

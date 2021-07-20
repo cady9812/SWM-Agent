@@ -26,7 +26,7 @@ def local_sniffer(port, queue, timeout = 10.0):
 
     def start():
         queue.put("START")
-        logger.info(f"Start Sniffing")
+        logger.info(f"[loopback] Start Sniffing")
 
     result = sniff(
         lfilter = checker,
@@ -60,11 +60,18 @@ def signature_sniffer(signature = "BAScope"):
 
     signature_checker = lambda pkt: bytes(pkt).endswith(b_signature)
 
+    def start():
+        logger.info("[defense] signature sniffer on")
+    def log_func(pkt):
+        logger.info("[defense] packet received")
     # 공격에 소요되는 시간, 패킷을 받는 시간을 고려하여 20초 동안 sniff 를 함
+
     result = sniff(
         timeout = 20.0,
         filter = "ip",
         lfilter = signature_checker,
+        started_callback = start,
+        prn = log_func
     )
 
     received_list = []
@@ -81,7 +88,7 @@ def signature_sniffer(signature = "BAScope"):
 def get_loopback_iface_name():
     for x, y in ifaces.items():
         if y.ip == loopback:
-            logger.debug(f"Loopback Adapter Name: {x}")
+            logger.debug(f"[loopback] Loopback Adapter Name: {x}")
             return x
 
 

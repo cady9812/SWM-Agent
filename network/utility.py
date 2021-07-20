@@ -44,6 +44,7 @@ def open_server(ip, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+    # redis 에서 string 으로 넘겨주기 때문에
     if type(port) == str:
         logger.debug("type(port) is str, converting to int")
         port = int(port)

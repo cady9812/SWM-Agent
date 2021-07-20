@@ -101,6 +101,7 @@ class CommandProcessor(object):
 
     def run(self):
         cmd = self.cmd
+        logger.info(f"CommandProcessor: Run with {cmd}")
 
         # 공격 agent (보안장비 모드)로 동작
         if cmd["type"] == "attack_secu":
@@ -162,6 +163,7 @@ class CommandProcessor(object):
         # 방어 agent 로 동작
         elif cmd["type"] == "defense":
             msg_list = packet.signature_sniffer()
+            logger.info(f"[defense] Result: {msg_list}")
 
             # 서버로 패킷 정보를 보내줌
             self.reporter({"pkts": msg_list})
@@ -232,5 +234,5 @@ if __name__ == "__main__":
         "usage": "python <FILE> <IP>"
     }
 
-    cp = CommandProcessor(secu, "http://0.0.0.0:9000/", 1)
+    cp = CommandProcessor(defense, "http://0.0.0.0:9000/", 1)
     cp.run()
