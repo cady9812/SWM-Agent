@@ -42,7 +42,10 @@ class Agent(object):
             cmd = json.loads(cmd)
 
             if cmd['type'] != "no command":
+                logger.debug(f'Command OK: {cmd}')
                 break
+                
+            logger.debug(f'No command: {cmd}')
             sleep(2)
 
         # json 형태의 cmd 를 처리하고,

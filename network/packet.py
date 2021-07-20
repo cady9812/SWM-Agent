@@ -17,6 +17,7 @@ loopback = "127.0.0.1"
 # TCP/UDP 계층 이후의 내용이 존재하는 패킷에 대하여, 그 부분을 분리하여 리턴해준다.
 # TCP 의 경우 패킷을 받을 상대가 없어서 동일한 패킷을 여러 번 보내는 경우가 있기 때문에, set으로 중복을 제거함
 def local_sniffer(port, queue, timeout = 10.0):
+    logger.info(f"call local_sniffer, port:{port}")
     def checker(pkt):
         if pkt[IP].src == loopback and pkt[IP].dst == loopback:
             if pkt.dport == port:
@@ -25,6 +26,7 @@ def local_sniffer(port, queue, timeout = 10.0):
 
     def start():
         queue.put("START")
+        logger.info(f"Start Sniffing")
 
     result = sniff(
         lfilter = checker,
@@ -32,6 +34,8 @@ def local_sniffer(port, queue, timeout = 10.0):
         iface = get_loopback_iface_name(),  # iface 를 lo로 안주면 loopback에서 오가는 패킷들을 아예 잡지 못하는 것 같음.
         started_callback = start,
     )
+
+    logger.info(f"End Sniffing")
 
     # 패킷의 순서를 보존하기 위해서 ordered_set 을 사용.
     # 그럴 것 같지는 않지만, 보안 장비가 패킷 사이의 

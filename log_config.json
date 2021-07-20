@@ -3,7 +3,7 @@
     "disable_existing_loggers": false,
     "formatters": {
         "basic": {
-            "format": "%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d %(name)s:%(funcName)s %(message)s",
+            "format": "%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d %(name)s:%(funcName)s\n> %(message)s",
             "datefmt": "%Y년%m월%d일%H시%M분%S초"
         }
     },

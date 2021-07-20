@@ -39,8 +39,16 @@ def send_with_size(sock, payload):
 
 
 def open_server(ip, port):
+    logger.info(f"Open Server")
+    logger.info(f"IP: {ip}, Port: {port}")
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    if type(port) == str:
+        logger.debug("type(port) is str, converting to int")
+        port = int(port)
+
     sock.bind((ip, port))
     sock.listen(0)
     return sock
@@ -68,6 +76,8 @@ def get_local_ip(server_ip="8.8.8.8"):
 
 
 def proxy(port):
+    logger.info(f"Open echo server with port:{port}")
+
     loopback = "127.0.0.1"
     s = open_server(loopback, port)
     c, _ = s.accept()
@@ -85,4 +95,5 @@ def proxy(port):
     c.close()
 
 if __name__ == "__main__":
+    proxy(445)
     pass
