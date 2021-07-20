@@ -81,11 +81,13 @@ def signature_sniffer(signature = "BAScope"):
 def get_loopback_iface_name():
     for x, y in ifaces.items():
         if y.ip == loopback:
+            logger.debug(f"Loopback Adapter Name: {x}")
             return x
 
 
 # send_msg_with_ip 는 타겟IP:타겟PORT 로 msg_list 에 있는 메시지들을 패킷으로 구성하여 send함
 def send_msg_with_ip(target_ip, target_port, msg_list):
+    logger.info(f"send {len(msg_list)} pkts to {target_ip}:{target_port}")
     for msg in msg_list:
         pkt = IP() / TCP() / Raw(msg)
         pkt[IP].dst = target_ip # src 는 자동으로 생성됨

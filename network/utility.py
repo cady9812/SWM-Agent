@@ -39,8 +39,7 @@ def send_with_size(sock, payload):
 
 
 def open_server(ip, port):
-    logger.info(f"Open Server")
-    logger.info(f"IP: {ip}, Port: {port}")
+    logger.info(f"[Open Server] IP: {ip}, Port: {port}")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -75,17 +74,20 @@ def get_local_ip(server_ip="8.8.8.8"):
     return ip
 
 
-def proxy(port):
+def proxy(port, agent = False, queue = None):
     logger.info(f"Open echo server with port:{port}")
 
     loopback = "127.0.0.1"
     s = open_server(loopback, port)
+    if agent:
+        queue.put("OK")
     c, _ = s.accept()
     c.settimeout(2.0)
 
     try:
         while True:
-            c.recv(50000)
+            msg = c.recv(50000)
+            logger.debug(f"loopback gets msg: {msg}")
             c.send(b"X" * 5000)     # 너무 많은 데이터를 보내면 sniff 에서 중요한 패킷을 놓칠 수 있음.
     except socket.timeout:
         pass

@@ -59,6 +59,7 @@ class Agent(object):
 
 def cmd_after_replacement(usage, replacements):
     # Reference: https://stackoverflow.com/a/55889140
+    # python 3.8 need
     [ usage := usage.replace(a, b) for a, b in replacements ]
     return usage
 
@@ -100,7 +101,7 @@ class CommandProcessor(object):
 
     def run(self):
         cmd = self.cmd
-###
+
         # 공격 agent (보안장비 모드)로 동작
         if cmd["type"] == "attack_secu":
             localhost = "127.0.0.1"
@@ -123,13 +124,15 @@ class CommandProcessor(object):
             # 공격코드가 10초 이상 걸리거나, send 사이의 간격이 2초 이상이라면 코드수정이 필요하다. 
             queue = Queue()
 
-            lo_proxy = Process(target = utility.proxy, args=(target_port, ))
+            lo_proxy = Process(target = utility.proxy, args=(target_port, True, queue))
             lo_sniffer = Process(target = packet.local_sniffer, args=(target_port, queue))
 
             lo_sniffer.start()
-            queue.get()     # sniff 가 켜지기까지 기다림.
+            queue.get()     # sniff와 proxy 가 켜지기까지 기다림.
 
             lo_proxy.start()
+            queue.get()
+
             # usage 에서 FILE, IP, PORT, SHELLCODE 가 필요한 경우, replace 를 통해 채워줌
             replacements = [
                 ("<FILE>", self.path),
@@ -137,12 +140,14 @@ class CommandProcessor(object):
                 ("<PORT>", str(target_port))
             ]
             usage = cmd_after_replacement(cmd['usage'], replacements)
+            logger.info(f"loopback usage: {usage}")
             subprocess.call(usage, shell=True)
 
             lo_proxy.join()
             lo_sniffer.join()
             msg_set = queue.get()
             msg_list = list(msg_set)
+            logger.debug(f"msg_list: {msg_list}")
 
             # 모든 패킷에 시그니쳐를 붙임
             for i in range(len(msg_list)):
