@@ -1,6 +1,15 @@
 from scapy.all import *
 from ordered_set import OrderedSet as oSet
 
+import json
+import logging
+import logging.config
+import pathlib
+log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
+config = json.load(open(str(log_config)))
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
+
 loopback = "127.0.0.1"
 
 # timeout (=10.0s) 동안 localhost -> localhost:port 로 향하는 패킷을 감청한다.
@@ -79,8 +88,7 @@ def send_msg_with_ip(target_ip, target_port, msg_list):
         pkt[TCP].dport = target_port
         pkt[TCP].sport = 65535  # 임의의 포트
         send(pkt)
-        # print("sended", bytes(pkt))
 
 
 if __name__ == "__main__":
-    print(local_sniffer(445))
+    local_sniffer(445)

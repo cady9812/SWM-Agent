@@ -2,6 +2,15 @@ import json
 import xmltodict
 from libnmap.process import NmapProcess
 
+import json
+import logging
+import logging.config
+import pathlib
+log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
+config = json.load(open(str(log_config)))
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
+
 # 옵션을 받아서 target 에 nmap 을 수행하고, 그 결과를 xml 형태로 반환함
 # usage: nmap_target("localhost", "-A", "-p 8000,22,90,445")
 def nmap_target(target, *options):
@@ -12,7 +21,6 @@ def nmap_target(target, *options):
     if v == SUCCESS:
         result = nm.stdout
     else:
-        print("Nmap Failed")
         exit(1)
 
     return result
@@ -22,7 +30,6 @@ def nmap_parser(xml_content):
     # json 형태로 바꿔 변수에 저장
     str_content = json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True)
     json_content = json.loads(str_content)
-    # print(json_content)
 
     json_data = json_content["nmaprun"]["host"]["ports"]
     json_data = json_data["port"]
@@ -73,4 +80,3 @@ def nmap_parser(xml_content):
 if __name__ == "__main__":
     a = nmap_target("172.30.1.26", "-A", "-Pn", "-p 445")
     res = nmap_parser(a)
-    print(res)

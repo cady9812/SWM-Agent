@@ -5,6 +5,11 @@ import requests
 from multiprocessing import Process, Queue
 import subprocess
 import base64
+import logging
+import logging.config
+config = json.load(open('logger.json'))
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
 
 """
 <API 명세서>
@@ -189,7 +194,6 @@ class CommandProcessor(object):
 
 
         else:
-            print("non implemented")
             exit(1)
 
 
