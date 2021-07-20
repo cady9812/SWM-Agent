@@ -1,3 +1,6 @@
+# Introduction
+Agent for Cyber Attack Simulation
+
 # Prerequisites
 ```bash
 sudo pip3 install -r requirements.txt
@@ -7,4 +10,9 @@ sudo pip3 install -r requirements.txt
 ```bash
 mkdir tmp
 sudo python3 main.py
+```
+
+# To clear log
+```bash
+./clear_log.sh
 ```
