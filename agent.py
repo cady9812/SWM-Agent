@@ -216,5 +216,13 @@ if __name__ == "__main__":
         "usage": "python <FILE> <IP>",
     }
 
-    cp = CommandProcessor(target, "http://0.0.0.0:9000/", 1)
+    secu = {
+        "type": "attack_secu",
+        "target_ip": "172.30.1.54",
+        "target_port": "445",
+        "download": "http://localhost:9000/exploit/1",
+        "usage": "python <FILE> <IP>"
+    }
+
+    cp = CommandProcessor(secu, "http://0.0.0.0:9000/", 1)
     cp.run()
