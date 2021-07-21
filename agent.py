@@ -5,19 +5,13 @@ import requests
 from multiprocessing import Process, Queue
 import subprocess
 import base64
+
 import logging
 import logging.config
 config = json.load(open('log_config.json'))
 logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
 
-"""
-<API 명세서>
-1. 공격 명령 내리기 : http://url/command/<int:id>
-2. 포트 스캔 결과 받기 : http://url/scan-result
-3. Agnet로부터 'ip , ETC 정보 전달' 보내기 : http://url/agent/info
-4. 다운로드 : http:url/download/
-"""
 
 class Agent(object):
     def __init__(self, server):
@@ -58,9 +52,14 @@ class Agent(object):
 
 
 def cmd_after_replacement(usage, replacements):
-    # Reference: https://stackoverflow.com/a/55889140
-    # python 3.8 need
-    [ usage := usage.replace(a, b) for a, b in replacements ]
+    import sys
+    if int(sys.version.split()[0].split('.')[1]) < 8:
+        for a, b in replacements:
+            usage = usage.replace(a, b)
+    else:
+        # Reference: https://stackoverflow.com/a/55889140
+        # python 3.8 need
+        [ usage := usage.replace(a, b) for a, b in replacements ]
     return usage
 
 

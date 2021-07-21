@@ -10,27 +10,25 @@
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "level": "INFO",
+            "level": "DEBUG",
             "formatter": "basic"
         },
         "file_debug": {
-            "class": "logging.FileHandler",
+            "class": "logging.NullHandler",
             "level": "DEBUG",
-            "formatter": "basic",
-            "filename": "debug.log"
+            "formatter": "basic"
         },
         "file_error": {
-            "class": "logging.FileHandler",
+            "class": "logging.NullHandler",
             "level": "ERROR",
-            "formatter": "basic",
-            "filename": "error.log"
+            "formatter": "basic"
         }
     },
     "loggers": {
         "": {
             "level": "DEBUG",
-            "handlers": ["console", "file_debug", "file_error"],
-            "propagate": true
+            "handlers": ["console"],
+            "propagate": false
         }
     }
 }
