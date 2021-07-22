@@ -4,9 +4,6 @@ path = Path(__file__).parent.resolve()
 parent = path.parents[0]
 [sys.path.append(x) for x in map(str, [path, parent]) if x not in sys.path]
 
-from processor import Processor 
-from network import packet
-
 import json
 import logging
 import logging.config
@@ -15,6 +12,9 @@ log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_c
 config = json.load(open(str(log_config)))
 logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
+
+from processor import Processor 
+from network import packet
 
 """
 {
@@ -25,6 +25,7 @@ class Defender(Processor):
     fields = []
     def __init__(self, cmd, id):
         super().__init__(cmd, id)
+        logger.info(f"[defense] cmd: {cmd}, id: {id}")
         self.check_cmd(self.fields)
     
     def run_cmd(self):

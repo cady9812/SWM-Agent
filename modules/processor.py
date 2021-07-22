@@ -14,6 +14,7 @@ class Processor(metaclass = ABCMeta):
     scan_url = "/scan-result"
     introduce_url = "/agent/info"
     report_url = "/report/<id>"
+
     # Processor 마다 id 하나 부여됨
     id = -1
 
