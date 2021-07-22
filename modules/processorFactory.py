@@ -10,16 +10,16 @@ from scanner import Scanner
 
 class ProcessorFactory(object):
     @classmethod
-    def init(cls, cmd):
+    def create(cls, cmd, id):
         cmd_type = cmd["type"]
         if cmd_type == "defense":
-            return Defender(cmd)
+            return Defender(cmd, id)
         elif cmd_type == "scan":
-            return Scanner(cmd)
+            return Scanner(cmd, id)
         elif cmd_type == "attack_target":
-            return TargetAttacker(cmd)
+            return TargetAttacker(cmd, id)
         elif cmd_type == 'attack_secu':
-            return SecuAttacker(cmd)
+            return SecuAttacker(cmd, id)
         else:
             print("Not implemented")
             exit(1)
