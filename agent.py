@@ -30,7 +30,11 @@ class Agent(object):
         # 서버에 1초마다 반복적으로 요청을 날리고, type 이라는 문자가 들어간 응답이 있는 경우에 멈춤
         # 이 작업말고는 할 일이 없기 때문에, 멀티쓰레딩으로 구현하지 않음
         while True:
-            cmd = requests.get(url).text
+            try:
+                cmd = requests.get(url).text
+            except:
+                logger.error("[Agent] Server connection refused")
+                exit(1)
             cmd = json.loads(cmd)
 
             if cmd['type'] != "no command":
