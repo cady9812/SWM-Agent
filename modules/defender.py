@@ -23,15 +23,26 @@ logger = logging.getLogger(__name__)
 """
 class Defender(Processor):
     fields = []
-    def __init__(self, cmd):
-        super().__init__(cmd)
+    def __init__(self, cmd, id):
+        super().__init__(cmd, id)
         self.check_cmd(self.fields)
     
     def run_cmd(self):
-        self.msg_list = packet.signature_sniffer()
-        logger.debug(f"[defense] Result: {self.msg_list}")
+        self.msg_list = packet.signature_sniffer(1)
+        logger.info(f"[defense] Result: {self.msg_list}")
+
+        pass
 
     def report(self):
+        url = self.base_url + self.report_url
+        data = {
+            "pkts": self.msg_list
+        }
+
+        logger.debug(f"[defense] requests {url}, data: {data}")
+        if self.call_server(url, data) == 0:
+            logger.error(f"[defense] report failed {url}, {data}")
+
         pass
 
 
@@ -39,5 +50,6 @@ if __name__ == '__main__':
     cmd = {
         "type": "defense"
     }
-    a = Defender(cmd)
+    a = Defender(cmd, 1)
     a.run_cmd()
+    a.report()

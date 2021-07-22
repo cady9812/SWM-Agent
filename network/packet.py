@@ -55,7 +55,7 @@ def local_sniffer(port, queue, timeout = 10.0):
     return
 
 # signature 로 끝나는 패킷만 캡쳐하여 리턴함
-def signature_sniffer(signature = "BAScope"):
+def signature_sniffer(timeout = 20.0, signature = "BAScope"):
     b_signature = signature.encode()
 
     signature_checker = lambda pkt: bytes(pkt).endswith(b_signature)
@@ -67,7 +67,7 @@ def signature_sniffer(signature = "BAScope"):
     # 공격에 소요되는 시간, 패킷을 받는 시간을 고려하여 20초 동안 sniff 를 함
 
     result = sniff(
-        timeout = 20.0,
+        timeout = timeout,
         filter = "ip",
         lfilter = signature_checker,
         started_callback = start,

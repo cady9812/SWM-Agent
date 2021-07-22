@@ -16,8 +16,8 @@ parent = path.parents[0]
 from processor import Processor
 class TargetAttacker(Processor):
     fields = []
-    def __init__(self, cmd):
-        super().__init__(cmd)
+    def __init__(self, cmd, id):
+        super().__init__(cmd, id)
         self.check_cmd(self.fields)
     
     pass
