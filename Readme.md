@@ -11,8 +11,3 @@ sudo pip3 install -r requirements.txt
 ```bash
 sudo python3 main.py
 ```
-
-# To clear log
-```bash
-./clear_log.sh
-```
