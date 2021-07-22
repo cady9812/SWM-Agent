@@ -24,6 +24,7 @@ class Agent(object):
 
     def run(self, response):
         self.id = json.loads(response)['agent_id']
+        logger.info(f"[Agent] ID: {self.id}")
         url = self.server + self.command + str(self.id)
         cmd = ''
 
@@ -41,7 +42,7 @@ class Agent(object):
                 logger.debug(f'Command OK: {cmd}')
                 break
                 
-            logger.debug(f'No command: {cmd}')
+            #logger.debug(f'No command: {cmd}')
             sleep(2)
 
         # json 형태의 cmd 를 처리하고,
