@@ -49,10 +49,10 @@ class Scanner(Processor):
         pass
 
 if __name__ == '__main__':
-    cmd = {
+    msg = {
         "type": "scan",
         "target_ip": "0.0.0.0",
     }
-    a = Scanner(cmd, 1)
+    a = Scanner(msg, 1)
     a.run_cmd()
     a.report()

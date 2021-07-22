@@ -77,7 +77,7 @@ class SecuAttacker(Processor):
             ("<PORT>", str(self.target_port))
         ]
 
-        usage = self.cmd_after_replacement(cmd['usage'], replacements)
+        usage = self.cmd_after_replacement(self.cmd['usage'], replacements)
         logger.info(f"[secu] loopback usage: {usage}")
         subprocess.call(usage, shell=True)
 
@@ -126,7 +126,7 @@ class SecuAttacker(Processor):
 
 
 if __name__ == '__main__':
-    cmd = {
+    msg = {
         "type": "attack_secu",
         "download": f"http://localhost:9000/exploit/1",
         "target_ip": "172.30.1.18",
@@ -134,6 +134,6 @@ if __name__ == '__main__':
         "usage": "python <FILE> <IP>",
     }
 
-    a = SecuAttacker(cmd, 1)
+    a = SecuAttacker(msg, 1)
     a.run_cmd(debug = True)
     a.report()

@@ -48,9 +48,9 @@ class Defender(Processor):
 
 
 if __name__ == '__main__':
-    cmd = {
+    msg = {
         "type": "defense"
     }
-    a = Defender(cmd, 1)
+    a = Defender(msg, 1)
     a.run_cmd()
     a.report()
