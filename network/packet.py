@@ -26,7 +26,7 @@ def local_sniffer(port, queue, timeout = 10.0):
 
     def start():
         queue.put("START")
-        logger.info(f"[loopback] Start Sniffing")
+        logger.info(f"[local sniffer] Start Sniffing")
 
     result = sniff(
         lfilter = checker,
@@ -35,7 +35,7 @@ def local_sniffer(port, queue, timeout = 10.0):
         started_callback = start,
     )
 
-    logger.info(f"End Sniffing")
+    logger.info(f"[local sniffer] End Sniffing")
 
     # 패킷의 순서를 보존하기 위해서 ordered_set 을 사용.
     # 그럴 것 같지는 않지만, 보안 장비가 패킷 사이의 

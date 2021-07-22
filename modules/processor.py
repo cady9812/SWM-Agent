@@ -48,3 +48,15 @@ class Processor(metaclass = ABCMeta):
             return 1
         except:
             return 0
+
+    def cmd_after_replacement(self, usage, replacements):
+        import sys
+        if int(sys.version.split()[0].split('.')[1]) < 8:
+            for a, b in replacements:
+                usage = usage.replace(a, b)
+        else:
+            # Reference: https://stackoverflow.com/a/55889140
+            # python 3.8 need
+            [ usage := usage.replace(a, b) for a, b in replacements ]
+
+        return usage

@@ -40,7 +40,6 @@ class Scanner(Processor):
         pass
 
     def report(self):
-        print("!")
         url = self.base_url + self.report_url
         data = self.parsed_res
 
