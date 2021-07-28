@@ -30,8 +30,8 @@ class TargetAttacker(Processor):
     fields = ["download", "target_ip", "target_port", "usage"]
     signature = b"BAScope"
 
-    def __init__(self, cmd, id):
-        super().__init__(cmd, id)
+    def __init__(self, cmd):
+        super().__init__(cmd)
         self.check_cmd(self.fields)
         self.path = str(parent) + "/tmp/ex.py"
         logger.debug(f"[target] file: {self.path}")
@@ -63,11 +63,8 @@ class TargetAttacker(Processor):
         return
 
     def report(self):
-        url = self.base_url + self.report_url
-        data = {}
-
         # attack target 모드에서는 무엇을 보고해야할까?
-        return
+        return {}
 
 if __name__ == '__main__':
     msg = {
@@ -78,6 +75,6 @@ if __name__ == '__main__':
         "usage": "python <FILE> <IP>",
     }
 
-    a = TargetAttacker(msg, 1)
+    a = TargetAttacker(msg)
     a.run_cmd(debug = True)
     a.report()

@@ -3,3 +3,4 @@ ordered_set
 scapy
 python-libnmap
 requests
+bson

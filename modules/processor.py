@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-import requests
 
 """
 <API 명세서>
@@ -10,22 +9,18 @@ import requests
 """
 
 class Processor(metaclass = ABCMeta):
-    base_url = "http://localhost:9000"
-    scan_url = "/scan-result"
-    introduce_url = "/agent/info"
-    report_url = "/report/<id>"
+    SERVER_IP = "0.0.0.0"
+    SERVER_PORT = 9000
 
     # Processor 마다 id 하나 부여됨
     id = -1
 
-    def __init__(self, cmd, id):
+    def __init__(self, cmd):
         self.cmd = cmd
-        assert "type" in cmd
-
-        self.type = cmd["type"]
-        self.id = str(id) if type(id) == int else id
-        self.report_url = self.report_url.replace("<id>", self.id)
-        pass
+        try:
+            self.type = cmd["type"]
+        except:
+            raise("'type' Not found")
 
     @abstractmethod
     def run_cmd(self):
@@ -41,13 +36,6 @@ class Processor(metaclass = ABCMeta):
     def check_cmd(self, fields):
         for field in fields:
             assert field in self.cmd
-
-    def call_server(self, url, data):
-        try:
-            requests.post(url, json = data)
-            return 1
-        except:
-            return 0
 
     def cmd_after_replacement(self, usage, replacements):
         import sys

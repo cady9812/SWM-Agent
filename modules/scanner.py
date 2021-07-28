@@ -24,9 +24,9 @@ from network import scanner
 """
 class Scanner(Processor):
     fields = ["target_ip"]
-    def __init__(self, cmd, id):
-        super().__init__(cmd, id)
-        logger.info(f"[scan] cmd: {cmd}, id: {id}")
+    def __init__(self, cmd):
+        super().__init__(cmd)
+        logger.info(f"[scan] cmd: {cmd}")
         self.check_cmd(self.fields)
 
     def run_cmd(self):
@@ -37,22 +37,18 @@ class Scanner(Processor):
 
         logger.info(f"[scan] scan result: {self.parsed_res}")
 
-        pass
-
-    def report(self):
-        url = self.base_url + self.report_url
-        data = self.parsed_res
-
-        logger.debug(f"[scan] requests {url}, data: {data}")
-        if self.call_server(url, data) == 0:
-            logger.error(f"[scan] report failed {url}, {data}")
-        pass
+    def report(self, sock):
+        data = {
+            "result": self.parsed_res,
+            "type": "scan",
+        }
+        return data
 
 if __name__ == '__main__':
     msg = {
         "type": "scan",
         "target_ip": "0.0.0.0",
     }
-    a = Scanner(msg, 1)
+    a = Scanner(msg)
     a.run_cmd()
     a.report()

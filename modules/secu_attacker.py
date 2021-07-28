@@ -17,7 +17,7 @@ from processor import Processor
 import requests
 from multiprocessing import Process, Queue
 import subprocess
-import base64
+import bson
 from network import utility, packet
 
 """
@@ -33,8 +33,8 @@ class SecuAttacker(Processor):
     fields = ["download", "target_ip", "target_port", "usage"]
     signature = b"BAScope"
 
-    def __init__(self, cmd, id):
-        super().__init__(cmd, id)
+    def __init__(self, cmd):
+        super().__init__(cmd)
         self.check_cmd(self.fields)
         self.path = str(parent) + "/tmp/ex.py"
         logger.debug(f"[secu] file: {self.path}")
@@ -79,6 +79,8 @@ class SecuAttacker(Processor):
 
         usage = self.cmd_after_replacement(self.cmd['usage'], replacements)
         logger.info(f"[secu] loopback usage: {usage}")
+        import time
+        time.sleep(3)
         subprocess.call(usage, shell=True)
 
         lo_proxy.join()
@@ -87,7 +89,7 @@ class SecuAttacker(Processor):
         
         return list(msg_set)
 
-    def run_cmd(self, debug = False):
+    def run_cmd(self, debug = True):
         self.debug = debug
         self.link = self.cmd['download']  # 공격 코드 다운로드 링크
         self.target_ip = self.cmd['target_ip']
@@ -111,19 +113,18 @@ class SecuAttacker(Processor):
 
         return
 
-    def report(self):
-        url = self.base_url + self.report_url
+    def report(self, sock = None):
         data = {
-            "pkts": list(map(base64.b64encode, self.msg_list)),
-            "link": self.link
+            "pkts": self.msg_list,
+            "type": "report",
+            "type2": "attack",
         }
 
-        logger.debug(f"[secu] requests {url}, data: {data}")
-        if self.call_server(url, data) == 0:
-            logger.error(f"[secu] report failed {url}, {data}")
-
-        return
-
+        print(data)
+        try:
+            sock.send(bson.dumps(data))
+        except:
+            raise Exception("Wrong socket")
 
 if __name__ == '__main__':
     msg = {
@@ -134,6 +135,6 @@ if __name__ == '__main__':
         "usage": "python <FILE> <IP>",
     }
 
-    a = SecuAttacker(msg, 1)
+    a = SecuAttacker(msg)
     a.run_cmd(debug = True)
     a.report()

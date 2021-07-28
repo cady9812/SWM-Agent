@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 from processor import Processor 
 from network import packet
+import bson
 
 """
 {
@@ -23,34 +24,37 @@ from network import packet
 """
 class Defender(Processor):
     fields = []
-    def __init__(self, cmd, id):
-        super().__init__(cmd, id)
-        logger.info(f"[defense] cmd: {cmd}, id: {id}")
+    TIMEOUT = 20.0
+
+    def __init__(self, cmd):
+        super().__init__(cmd)
+        logger.info(f"[defense] cmd: {cmd}")
         self.check_cmd(self.fields)
     
     def run_cmd(self):
-        self.msg_list = packet.signature_sniffer(1)
+        self.msg_list = packet.signature_sniffer(self.TIMEOUT)
         logger.info(f"[defense] Result: {self.msg_list}")
 
         pass
 
-    def report(self):
-        url = self.base_url + self.report_url
+    def report(self, sock = None):
         data = {
-            "pkts": self.msg_list
+            "pkts": self.msg_list,
+            "type": "report",
+            "type2": "defense",
         }
 
-        logger.debug(f"[defense] requests {url}, data: {data}")
-        if self.call_server(url, data) == 0:
-            logger.error(f"[defense] report failed {url}, {data}")
-
-        pass
+        print(data)
+        try:
+            sock.send(bson.dumps(data))
+        except:
+            raise Exception("Wrong socket")
 
 
 if __name__ == '__main__':
     msg = {
         "type": "defense"
     }
-    a = Defender(msg, 1)
+    a = Defender(msg)
     a.run_cmd()
     a.report()

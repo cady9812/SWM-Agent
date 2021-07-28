@@ -13,13 +13,13 @@ class ProcessorFactory(object):
     def create(cls, cmd, id):
         cmd_type = cmd["type"]
         if cmd_type == "defense":
-            return Defender(cmd, id)
+            return Defender(cmd)
         elif cmd_type == "scan":
-            return Scanner(cmd, id)
+            return Scanner(cmd)
         elif cmd_type == "attack_target":
-            return TargetAttacker(cmd, id)
+            return TargetAttacker(cmd)
         elif cmd_type == 'attack_secu':
-            return SecuAttacker(cmd, id)
+            return SecuAttacker(cmd)
         else:
             print("Not implemented")
             exit(1)
