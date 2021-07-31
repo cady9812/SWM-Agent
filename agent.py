@@ -45,12 +45,14 @@ class Agent(object):
         p = Process(target = self._process_cmd, args = (cmd, ))
         p.start()
 
+
     def _process_cmd(self, cmd):
         # json 형태의 cmd 를 처리하고,
         # 서버로 결과를 보고함
         p = ProcessorFactory.create(cmd, self.id)
         p.run_cmd()
         p.report(self.sock)
+        return
 
     def run(self):
         logger.info("[agent] Connecting...")

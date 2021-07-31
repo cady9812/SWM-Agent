@@ -107,6 +107,7 @@ def random_port_proxy(port = 0, agent = False, queue = None):
     try:
         c, _ = s.accept()
     except:
+        s.close()
         return
 
     c.settimeout(2.0)
@@ -122,6 +123,7 @@ def random_port_proxy(port = 0, agent = False, queue = None):
         pass
 
     c.close()
+    s.close()
 
 if __name__ == "__main__":
     random_port_proxy()
