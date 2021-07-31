@@ -19,15 +19,18 @@ from network import scanner
 """
 {
     "type": "scan",
-    "target_ip": "172.30.1.24",
+    "dst_ip": "172.30.1.24",
 }
 """
 class Scanner(Processor):
-    fields = ["target_ip"]
+    FIELDS = ["dst_ip"]
+
     def __init__(self, cmd):
         super().__init__(cmd)
+        self.check_cmd(self.FIELDS)
         logger.info(f"[scan] cmd: {cmd}")
-        self.check_cmd(self.fields)
+
+        return
 
     def run_cmd(self):
         target_ip = self.cmd["target_ip"]
@@ -37,12 +40,16 @@ class Scanner(Processor):
 
         logger.info(f"[scan] scan result: {self.parsed_res}")
 
+
     def report(self, sock):
         data = {
-            "result": self.parsed_res,
             "type": "scan",
+            "ports": self.parsed_res,
         }
-        return data
+
+        logger.info(f"[scan] data: {data}")
+        self._report(sock, data)
+
 
 if __name__ == '__main__':
     msg = {

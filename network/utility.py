@@ -45,7 +45,7 @@ def open_server(ip, port):
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     # redis 에서 string 으로 넘겨주기 때문에
-    if type(port) == str:
+    if isinstance(port, str):
         logger.debug("type(port) is str, converting to int")
         port = int(port)
 
@@ -75,14 +75,40 @@ def get_local_ip(server_ip="8.8.8.8"):
     return ip
 
 
-def proxy(port, agent = False, queue = None):
+def get_free_port(hint_port = 0):
+    tmp_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tmp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        tmp_sock.bind(('', hint_port))
+        return tmp_sock.getsockname()[1]
+
+    except Exception as e:
+        # reference: https://stackoverflow.com/questions/1365265/on-localhost-how-do-i-pick-a-free-port-number
+        tmp_sock.bind(('', 0))
+
+        ephemeral_port = tmp_sock.getsockname()[1]
+        tmp_sock.close()
+
+        logger.info(f"[!] find free port: {ephemeral_port}")
+        return ephemeral_port
+
+def random_port_proxy(port = 0, agent = False, queue = None):
+    port = get_free_port(port)
     logger.info(f"Open echo server with port:{port}")
 
     loopback = "127.0.0.1"
     s = open_server(loopback, port)
+    s.settimeout(7.0)
+
     if agent:
-        queue.put("OK")
-    c, _ = s.accept()
+        queue.put(port)
+    
+    c = None
+    try:
+        c, _ = s.accept()
+    except:
+        return
+
     c.settimeout(2.0)
 
     try:
@@ -98,5 +124,5 @@ def proxy(port, agent = False, queue = None):
     c.close()
 
 if __name__ == "__main__":
-    proxy(445)
+    random_port_proxy()
     pass

@@ -7,6 +7,7 @@ from target_attacker import TargetAttacker
 from secu_attacker import SecuAttacker
 from defender import Defender
 from scanner import Scanner
+from malware import Malware
 
 class ProcessorFactory(object):
     @classmethod
@@ -20,6 +21,8 @@ class ProcessorFactory(object):
             return TargetAttacker(cmd)
         elif cmd_type == 'attack_secu':
             return SecuAttacker(cmd)
+        elif cmd_type == 'malware':
+            return Malware(cmd)
         else:
             print("Not implemented")
             exit(1)
