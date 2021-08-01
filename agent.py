@@ -30,6 +30,7 @@ class Agent(object):
     def connect_to_server(self):
         self.sock = utility.remote(SERVER_IP, SERVER_PORT)
 
+    # _run 은 단일 프로세스
     def _run(self):
         logger.info("[agent] wait cmd...")
         cmd = self.sock.recv(self.BUF_SIZE)

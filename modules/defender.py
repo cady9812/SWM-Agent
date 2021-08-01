@@ -25,7 +25,7 @@ from network import packet
 """
 class Defender(Processor):
     TIMEOUT = 20.0
-    FIELDS = ["attack_id"]
+    FIELDS = ["attack_id", "port"]
 
     def __init__(self, cmd):
         super().__init__(cmd)
@@ -46,7 +46,7 @@ class Defender(Processor):
             "pkts": self.msg_list,
             "who": "recv",
             "type": "report",
-            "attack_id": self.cmd["attack_id"]
+            "attack_id": self.cmd["attack_id"],
         }
 
         logger.info(f"[defense] data: {data}")
@@ -57,6 +57,7 @@ if __name__ == '__main__':
     msg = {
         "type" : "defense",
         "attack_id" : 1,
+        "port": 445,
     }
     a = Defender(msg)
     a.run_cmd()
