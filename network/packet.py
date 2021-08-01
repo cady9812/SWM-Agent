@@ -79,7 +79,7 @@ def signature_sniffer(timeout = 20.0, signature = "BAScope"):
     for pkt in result:
         assert 3 < len(pkt.layers())    # Eth/IP/TCP/Raw
         payload = bytes(pkt[3])
-        payload.replace(b_signature, b'')   # 시그니쳐 제거
+        payload = payload.replace(b_signature, b'')   # 시그니쳐 제거
         received_list.append(payload)
     
     return received_list

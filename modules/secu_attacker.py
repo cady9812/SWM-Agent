@@ -143,6 +143,7 @@ class SecuAttacker(Processor):
             "pkts": self.msg_list,
             "type": "report",
             "who": "send",
+            "attack_id": self.cmd['attack_id'],
         }
 
         logger.info(f"[secu] data: {data}")

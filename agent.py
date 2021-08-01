@@ -47,6 +47,7 @@ class Agent(object):
             port = cmd['port']
             Q[port].popleft()
             if Q[port]: # 기다리는 명령어가 있다면
+                logger.info("[unlock] port: ", port, Q[port][0])
                 return Q[port][0]
 
             return None
@@ -64,7 +65,11 @@ class Agent(object):
             return cmd
 
         # 이미 사용중인 port 라면 None 을 리턴
-        result_cmd = None if Q[port] else cmd
+        result_cmd = cmd
+        if Q[port]:
+            logger.info("[lock] unavailable port", cmd)
+            result_cmd = None
+        
         Q[port].append(cmd)
         return result_cmd
 
