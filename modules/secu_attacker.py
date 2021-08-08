@@ -68,7 +68,6 @@ class SecuAttacker(Processor):
         lo_proxy = Process(target = utility.random_port_proxy, args=(port, True, queue1))
         lo_proxy.start()
         port = queue1.get()
-        self.target_port = port
 
         lo_sniffer = Process(target = packet.local_sniffer, args=(port, queue2))
         lo_sniffer.start()
@@ -144,6 +143,7 @@ class SecuAttacker(Processor):
             "type": "report",
             "who": "send",
             "attack_id": self.cmd['attack_id'],
+            "port": self.target_port,
         }
 
         logger.info(f"[secu] data: {data}")

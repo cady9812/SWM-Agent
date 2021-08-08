@@ -45,6 +45,9 @@ class Agent(object):
         '''
         if cmd['type'] == 'unlock':
             port = cmd['port']
+            if port == 0:
+                return None
+
             Q[port].popleft()
             if Q[port]: # 기다리는 명령어가 있다면
                 logger.info("[unlock] port: ", port, Q[port][0])
