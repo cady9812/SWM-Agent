@@ -33,7 +33,7 @@ class Scanner(Processor):
         return
 
     def run_cmd(self):
-        target_ip = self.cmd["target_ip"]
+        target_ip = self.cmd["dst_ip"]
         # windows 같은 경우 디폴트로 ping 이 먹히지 않기 때문에, -Pn 옵션을 사용
         res = scanner.nmap_target(target_ip, "-A", "-Pn")
         self.parsed_res = scanner.nmap_parser(res)
@@ -41,7 +41,7 @@ class Scanner(Processor):
         logger.info(f"[scan] scan result: {self.parsed_res}")
 
 
-    def report(self, sock):
+    def report(self, sock = None):
         data = {
             "type": "scan",
             "ports": self.parsed_res,
@@ -54,7 +54,7 @@ class Scanner(Processor):
 if __name__ == '__main__':
     msg = {
         "type": "scan",
-        "target_ip": "0.0.0.0",
+        "dst_ip": "0.0.0.0",
     }
     a = Scanner(msg)
     a.run_cmd()

