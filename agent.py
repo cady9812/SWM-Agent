@@ -33,6 +33,13 @@ class Agent(object):
     def connect_to_server(self):
         self.sock = utility.remote(SERVER_IP, SERVER_PORT)
 
+        # 본인이 Agent 임을 알리기 위해서
+        introduce = {
+        "type": "introduce",
+        "detail": "agent",
+        }
+        self.sock.send(bson.dumps(introduce))
+
 
     def _scheduler(self, cmd):
         Q = self.per_port_queue

@@ -23,7 +23,7 @@ from network import scanner
 }
 """
 class Scanner(Processor):
-    FIELDS = ["dst_ip"]
+    FIELDS = ["dst_ip", "ticket"]
 
     def __init__(self, cmd):
         super().__init__(cmd)
@@ -45,6 +45,7 @@ class Scanner(Processor):
         data = {
             "type": "scan",
             "ports": self.parsed_res,
+            "ticket": self.cmd['ticket'],
         }
 
         logger.info(f"[scan] data: {data}")
@@ -55,6 +56,7 @@ if __name__ == '__main__':
     msg = {
         "type": "scan",
         "dst_ip": "0.0.0.0",
+        "ticket": 3,
     }
     a = Scanner(msg)
     a.run_cmd()
