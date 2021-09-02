@@ -5,13 +5,18 @@ import log_config
 logger = log_config.get_custom_logger(__name__)
 
 from modules.processorFactory import ProcessorFactory
-import bson
+import bson, json
 from multiprocessing import Process
 
 from collections import defaultdict, deque
 
-SERVER_IP = "0.0.0.0"
-SERVER_PORT = 9000
+
+with open("config.ini") as f:
+    config = json.loads(f.read())
+    SERVER_IP = config["SERVER_IP"]
+    SERVER_PORT = config["WEB_PORT"]
+    logger.debug(f"[config] {SERVER_IP:SERVER_PORT}")
+
 
 class Agent(object):
     BUF_SIZE = 0x1000
