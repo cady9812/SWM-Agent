@@ -2,14 +2,8 @@ import json
 import xmltodict
 from libnmap.process import NmapProcess
 
-import json
-import logging
-import logging.config
-import pathlib
-log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
-config = json.load(open(str(log_config)))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
 
 # 옵션을 받아서 target 에 nmap 을 수행하고, 그 결과를 xml 형태로 반환함
 # usage: nmap_target("localhost", "-A", "-p 8000,22,90,445")

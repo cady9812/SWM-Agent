@@ -5,3 +5,4 @@ python-libnmap
 requests
 bson
 kvm
+python-logstash

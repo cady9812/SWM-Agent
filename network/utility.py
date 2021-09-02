@@ -2,14 +2,8 @@ import socket
 import struct
 import time
 
-import json
-import logging
-import logging.config
-import pathlib
-log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
-config = json.load(open(str(log_config)))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
 
 def recv_with_size(sock, timeout = 10.0):
     sock.settimeout(timeout) # recv timeout for 5s

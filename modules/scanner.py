@@ -4,14 +4,8 @@ path = Path(__file__).parent.resolve()
 parent = path.parents[0]
 [sys.path.append(x) for x in map(str, [path, parent]) if x not in sys.path]
 
-import json
-import logging
-import logging.config
-import pathlib
-log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
-config = json.load(open(str(log_config)))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
 
 from processor import Processor
 from network import scanner
