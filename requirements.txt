@@ -6,3 +6,6 @@ requests
 bson
 kvm
 python-logstash
+six
+psutil
+construct
