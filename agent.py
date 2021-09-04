@@ -11,11 +11,14 @@ from multiprocessing import Process
 from collections import defaultdict, deque
 
 
-with open("config.ini") as f:
-    config = json.loads(f.read())
-    SERVER_IP = config["SERVER_IP"]
-    SERVER_PORT = config["WEB_PORT"]
-    logger.debug(f"[config] {SERVER_IP:SERVER_PORT}")
+config = {
+    "SERVER_IP": "127.0.0.1",
+    "WEB_PORT": 5000,
+    "LOG_PORT": 5002,
+}
+
+SERVER_IP = config["SERVER_IP"]
+SERVER_PORT = config["LOG_PORT"]
 
 
 class Agent(object):

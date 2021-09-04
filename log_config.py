@@ -3,11 +3,14 @@ import logging.config
 import json
 # logstash import 안해도 되는 것 같음
 
+config = {
+    "SERVER_IP": "127.0.0.1",
+    "WEB_PORT": 5000,
+    "LOG_PORT": 5002,
+}
 
-with open("config.ini") as f:
-    config = json.loads(f.read())
-    SERVER_IP = config["SERVER_IP"]
-    SERVER_PORT = config["LOG_PORT"]
+SERVER_IP = config["SERVER_IP"]
+SERVER_PORT = config["LOG_PORT"]
 
 
 def get_custom_logger(name):
