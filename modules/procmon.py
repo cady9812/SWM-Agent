@@ -11,7 +11,7 @@ from processor import Processor
 from config import *
 import requests
 from dir_procmon.procmon import execute, analysis_extention, pml_parse
-from network.utility import make_path
+from network.utility import make_path, current_time
 
 """
 {
@@ -59,7 +59,10 @@ class Procmon(Processor):
         ps_full_name = analysis_extention(cmd['filename']) # wordpress.exe 파일명 <- 이렇게 return
         execute(ps_full_name)
         parse_result = pml_parse(cmd['filename'])
-        with open("monitoring_res.txt","wb") as f:
+        report_name = f"{current_time()}-{cmd['filename'].log}"
+        report_path = str(path.join("").join(report_name))
+        logger.debug(f"Report Path: {report_path}")
+        with open(report_path, "wb") as f:
             for data in parse_result:
                 f.write(str(data).encode())
                 f.write("\n".encode())

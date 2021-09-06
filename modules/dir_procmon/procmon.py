@@ -81,7 +81,6 @@ def run_malware(f_name):
 
     logger.info(f"Run Command: {f_name_absolute}")
     os.system(str(f_name_absolute))
-    # subprocess.Popen(["python", "a.py", str(f_name)], stdout=subprocess.PIPE, shell=True)
     
 
 def execute(f_name):

@@ -5,7 +5,11 @@ import time
 from log_config import get_custom_logger
 logger = get_custom_logger(__name__)
 
-import pathlib
+import datetime
+def current_time():
+    return datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+
 def make_path(base, add):
     return str(base.joinpath(add))
 
