@@ -62,19 +62,22 @@ class Procmon(Processor):
         report_name = f"{current_time()}-{cmd['filename']}.log"
         report_path = str(path.joinpath("./dir_procmon/report/").joinpath(report_name))
         logger.debug(f"Report Path: {report_path}")
+        result = "\n".join(parse_result)
         with open(report_path, "wb") as f:
-            for data in parse_result:
-                f.write(str(data).encode())
-                f.write("\n".encode())
+            f.write(result.encode())
+        
+        self.result = result
+        return
 
 
     def report(self, sock = None):
         data = {
             "type": "procmon_log",
             "attack_id": self.cmd["attack_id"],
+            "log": self.result
         }
 
-        logger.info(f"[procmon] data: {data}")
+        logger.info(f"[procmon] data: {data['type']}/{data['attack_id']}")
         self._report(sock, data)
 
 
