@@ -50,12 +50,15 @@ def open_server(ip, port):
 
 def remote(ip, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    logger.info(f"Try remote({ip}:{port})")
     while True:
         try:
             s.connect((ip, port))
             break
-        except ConnectionRefusedError:
-            time.sleep(0.1)
+
+        # OSError for windows
+        except (ConnectionRefusedError, OSError):
+            time.sleep(2)
             pass
 
     return s
