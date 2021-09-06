@@ -13,13 +13,15 @@ pparent = parent.parents[0]
 [sys.path.append(x) for x in map(str, [path, parent, pparent]) if x not in sys.path]
 
 from log_config import get_custom_logger
+from network.utility import make_path
 logger = get_custom_logger(__name__)
 
 TIME = 20
 
-START_COMMAND = "Procmon64.exe /Minimized /Runtime "+str(TIME)+" /BackingFile out.pml"
+procmon_absolute_path = make_path(path, "Procmon64.exe")
+START_COMMAND = f"{procmon_absolute_path} /Minimized /Runtime "+str(TIME)+" /BackingFile out.pml"
 
-extensions = {"doc": "WINWORD.EXE ", "excel":"EXCEL.EXE ","hwp":"HWP.EXE ","exe":".\\","docx":"WINWORD.EXE "}
+extensions = {"doc": "WINWORD.EXE ", "excel":"EXCEL.EXE ","hwp":"HWP.EXE ","exe":"","docx":"WINWORD.EXE "}
 
 
 def kill_process(ps_name):
@@ -88,7 +90,7 @@ def execute(f_name):
     
     logger.info("[*] Waiting...")
     time.sleep(TIME)
-    kill_process(f_name)  
+    kill_process(f_name)
 
 
 def analysis_extention(name):
