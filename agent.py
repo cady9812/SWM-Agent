@@ -10,15 +10,10 @@ from multiprocessing import Process
 
 from collections import defaultdict, deque
 
+import config
 
-config = {
-    "SERVER_IP": "127.0.0.1",
-    "WEB_PORT": 5000,
-    "LOG_PORT": 5002,
-}
-
-SERVER_IP = config["SERVER_IP"]
-SERVER_PORT = config["LOG_PORT"]
+SERVER_IP = config.SERVER_IP
+TCP_PORT = config.TCP_PORT
 
 
 class Agent(object):
@@ -34,7 +29,7 @@ class Agent(object):
             assert field in self.cmd
 
     def connect_to_server(self):
-        self.sock = utility.remote(SERVER_IP, SERVER_PORT)
+        self.sock = utility.remote(SERVER_IP, TCP_PORT)
 
         # 본인이 Agent 임을 알리기 위해서
         introduce = {

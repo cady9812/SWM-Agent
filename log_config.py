@@ -1,16 +1,11 @@
 import logging
 import logging.config
-import json
+import config
 # logstash import 안해도 되는 것 같음
 
-config = {
-    "SERVER_IP": "127.0.0.1",
-    "WEB_PORT": 5000,
-    "LOG_PORT": 5002,
-}
 
-SERVER_IP = config["SERVER_IP"]
-SERVER_PORT = config["LOG_PORT"]
+SERVER_IP = config.SERVER_IP
+AGENT_LOG_PORT = config.AGENT_LOG_PORT
 
 
 def get_custom_logger(name):
@@ -34,8 +29,8 @@ def get_custom_logger(name):
             'logstash': {
                 'level': 'INFO',
                 'class': 'logstash.TCPLogstashHandler',
-                'host': 'SERVER_IP',
-                'port': SERVER_PORT, # Default value: 5959
+                'host': SERVER_IP,
+                'port': AGENT_LOG_PORT, # Default value: 5959
                 'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
                 'message_type': 'logstash',  # 'type' field in logstash message. Default value: 'logstash'.
                 'fqdn': False, # Fully qualified domain name. Default value: false.
@@ -46,7 +41,7 @@ def get_custom_logger(name):
         "loggers": {
             "": {
                 "level": "DEBUG",
-                # "handlers": ["console", "logstash"],  # TODO
+                # "handlers": ["console", "logstash"],  # GREP
                 "handlers": ["console"],
                 "propagate": False,
             }
