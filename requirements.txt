@@ -9,3 +9,4 @@ python-logstash
 six
 psutil
 construct
+procmon_parser

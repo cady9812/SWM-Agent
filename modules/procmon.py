@@ -10,7 +10,7 @@ logger = get_custom_logger(__name__)
 from processor import Processor 
 from config import *
 import requests
-from dir_procmon.procmon import * 
+from dir_procmon.procmon import execute, analysis_extention, pml_parse
 
 """
 {
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     msg = {
         "type" : "procmon",
         "attack_id" : 13,
-        "download": "http://localhost:8000/12.exe",
+        "download": "http://172.30.1.14:8000/12.exe",
         "filename": "12.exe"
     }
 
