@@ -62,7 +62,7 @@ class Procmon(Processor):
         report_name = f"{current_time()}-{cmd['filename']}.log"
         report_path = str(path.joinpath("./dir_procmon/report/").joinpath(report_name))
         logger.debug(f"Report Path: {report_path}")
-        result = "\n".join(parse_result)
+        result = "\n".join(map(str, parse_result))
         with open(report_path, "wb") as f:
             f.write(result.encode())
         
