@@ -5,6 +5,11 @@ import time
 from log_config import get_custom_logger
 logger = get_custom_logger(__name__)
 
+import pathlib
+def make_path(base, add):
+    return str(base.joinpath(add))
+
+
 def recv_with_size(sock, timeout = 10.0):
     sock.settimeout(timeout) # recv timeout for 5s
 

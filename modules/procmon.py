@@ -11,6 +11,7 @@ from processor import Processor
 from config import *
 import requests
 from dir_procmon.procmon import execute, analysis_extention, pml_parse
+from network.utility import make_path
 
 """
 {
@@ -35,7 +36,7 @@ class Procmon(Processor):
         if debug:
             return
 
-        download_path = str(path.joinpath(f"dir_procmon/download/{cmd['filename']}"))
+        download_path = make_path(path, f"dir_procmon/download/{cmd['filename']}")
         logger.debug(f"[procmon] Download at -> {download_path}")
         try:
             r = requests.get(cmd['download'])

@@ -19,7 +19,7 @@ TIME = 20
 
 START_COMMAND = "Procmon64.exe /Minimized /Runtime "+str(TIME)+" /BackingFile out.pml"
 
-extensions = {"doc": "WINWORD.EXE", "excel":"EXCEL.EXE","hwp":"HWP.EXE","exe":"","docx":"WINWORD.EXE"}
+extensions = {"doc": "WINWORD.EXE ", "excel":"EXCEL.EXE ","hwp":"HWP.EXE ","exe":".\\","docx":"WINWORD.EXE "}
 
 
 def kill_process(ps_name):
@@ -94,7 +94,7 @@ def execute(f_name):
 def analysis_extention(name):
     si = name.split('.')[1].lower() # 파일 확장자명 뽑는다.
     ps = extensions[si] # 확장자명에 해당하는 프로세스명 뽑는다.
-    return ps+" "+name
+    return ps + name
 
 
 if __name__ == "__main__":
