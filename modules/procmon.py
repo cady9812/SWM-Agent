@@ -59,7 +59,7 @@ class Procmon(Processor):
         ps_full_name = analysis_extention(cmd['filename']) # wordpress.exe 파일명 <- 이렇게 return
         execute(ps_full_name)
         parse_result = pml_parse(cmd['filename'])
-        report_name = f"{current_time()}-{cmd['filename'].log}"
+        report_name = f"{current_time()}-{cmd['filename']}.log"
         report_path = str(path.join("").join(report_name))
         logger.debug(f"Report Path: {report_path}")
         with open(report_path, "wb") as f:
