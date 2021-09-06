@@ -7,7 +7,7 @@ import psutil
 from procmon_parser import ProcmonLogsReader
 
 
-TIME = 5
+TIME = 20
 
 START_COMMAND = "Procmon64.exe /Minimized /Runtime "+str(TIME)+" /BackingFile out.pml"
 
