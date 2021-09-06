@@ -60,7 +60,7 @@ class Procmon(Processor):
         execute(ps_full_name)
         parse_result = pml_parse(cmd['filename'])
         report_name = f"{current_time()}-{cmd['filename']}.log"
-        report_path = str(path.joinpath("").joinpath(report_name))
+        report_path = str(path.joinpath("./dir_procmon/report/").joinpath(report_name))
         logger.debug(f"Report Path: {report_path}")
         with open(report_path, "wb") as f:
             for data in parse_result:
