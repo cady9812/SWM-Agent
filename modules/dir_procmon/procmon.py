@@ -77,8 +77,7 @@ def pml_parse(binary_name):
 
 def run_malware(f_name):
     logger.debug(f"FName: {f_name}")
-    f_name_absolute = make_path(path, "download")
-    f_name_absolute = make_path(f_name_absolute, f_name)
+    f_name_absolute = str(path.joinpath("download").joinpath(f_name))
 
     logger.info(f"Run Command: {f_name_absolute}")
     os.system(str(f_name_absolute))
