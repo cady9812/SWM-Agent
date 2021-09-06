@@ -1,6 +1,16 @@
 from abc import ABCMeta, abstractmethod
 import requests, bson
 
+import sys
+from pathlib import Path
+path = Path(__file__).parent.resolve()
+parent = path.parents[0]
+[sys.path.append(x) for x in map(str, [path, parent]) if x not in sys.path]
+
+from config import *
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
+
 """
 <API 명세서>
 1. 공격 명령 내리기 : http://url/command/<int:id>
@@ -100,6 +110,5 @@ class Processor(metaclass = ABCMeta):
         try:
             sock.send(bson.dumps(data))
         except:
-            print("Wrong socket!")
+            logger.fatal(f"{RED}Wrong socket!{END}")
             exit(1)
-
