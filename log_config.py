@@ -16,6 +16,10 @@ def get_custom_logger(name):
             "basic": {
                 "format": "%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d %(name)s:%(funcName)s\n> %(message)s",
                 "datefmt": "%Y-%m-%d | %H:%M:%S",   # 한글 쓰면 windows 인코딩이 달라서 문제가 발생하는 듯 함.
+            },
+            "green_theme": {
+                "format": "%(asctime)s \033[0;32m[%(levelname)s]\033[0m %(filename)s:%(lineno)d %(name)s:%(funcName)s\n> %(message)s",
+                "datefmt": "%Y-%m-%d | %H:%M:%S",   # 한글 쓰면 windows 인코딩이 달라서 문제가 발생하는 듯 함.
             }
         },
 
@@ -23,7 +27,7 @@ def get_custom_logger(name):
             "console": {
                 "class": "logging.StreamHandler",
                 "level": "DEBUG",
-                "formatter": "basic"
+                "formatter": "green_theme"
             },
             # reference: https://github.com/vklochan/python-logstash
             'logstash': {

@@ -89,7 +89,8 @@ class Agent(object):
 
         if not cmd:
             logger.info("[agent] TCP Server dead XXXXX")
-            exit(1)
+            return True
+            # exit(1)
 
         logger.debug(f"bson: {cmd}")
         cmd = bson.loads(cmd)
@@ -116,7 +117,8 @@ class Agent(object):
 
         while True:
             try:
-                self._run()
+                if self._run():
+                    logger.info("[agent] Re connecting...")
+                    self.connect_to_server()
             except Exception as e:
                 logger.error(f"Wrong Cmd: {e}")
-
