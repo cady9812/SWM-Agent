@@ -74,7 +74,8 @@ class Procmon(Processor):
         data = {
             "type": "procmon_log",
             "attack_id": self.cmd["attack_id"],
-            "log": self.result
+            "log": self.result, 
+            "ticket": self.ticket,
         }
 
         logger.info(f"[procmon] data: {data['type']}/{data['attack_id']}")
@@ -86,7 +87,8 @@ if __name__ == '__main__':
         "type" : "procmon",
         "attack_id" : 13,
         "download": "http://172.30.1.14:8000/12.exe",
-        "filename": "12.exe"
+        "filename": "12.exe",
+        "ticket": 3,
     }
 
     a = Procmon(msg)

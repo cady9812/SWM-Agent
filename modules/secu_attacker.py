@@ -117,7 +117,8 @@ class SecuAttacker(Processor):
         logger.info(f"[secu] Create {len(msg_list)} packets: {msg_list}")
 
         # 모든 패킷에 시그니쳐를 붙임
-        signature = f"BAScope{self.cmd['attack_id']}"
+        signature = f"BAScope{self.cmd['ticket']}_{self.cmd['attack_id']}"
+        logger.info(f"[!] signature: {signature}")
         signature_b = signature.encode()
 
         for i in range(len(msg_list)):
@@ -138,6 +139,7 @@ class SecuAttacker(Processor):
             "who": "send",
             "attack_id": self.cmd['attack_id'],
             "port": self.target_port,
+            "ticket": self.fd,
         }
 
         logger.info(f"[secu] data: {data}")
@@ -153,11 +155,12 @@ if __name__ == '__main__':
         "download": f"http://localhost:9000/download/1",
         "file_size": 4656,
         "usage": "python <FILE> <IP>",
-        "attack_id" : 1
+        "attack_id" : 1,
+        "ticket": 4,
     }
 
     a = SecuAttacker(msg)
-    # a.run_cmd(debug = True)
-    a.run_cmd()
+    a.run_cmd(debug = True)
+    # a.run_cmd()
     a.report()
 

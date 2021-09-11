@@ -72,6 +72,7 @@ if __name__ == '__main__':
     "download": f"http://localhost:9000/exploit/{id}",
     "file_size": 1000,
     "usage": "python <FILE> <IP>",
+    "ticket": 4,
     }
 
     a = TargetAttacker(msg)

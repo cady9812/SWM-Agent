@@ -31,8 +31,10 @@ class Processor(metaclass = ABCMeta):
         self.cmd = cmd
         try:
             self.type = cmd["type"]
+            self.ticket = cmd["ticket"]   # ticket 이 없는건 말이 안되죠
         except:
-            raise("'type' Not found")
+            logger.fatal("'type' or 'ticket' Not found")
+            exit(1)
         
         return
 

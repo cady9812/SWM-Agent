@@ -31,7 +31,10 @@ class Defender(Processor):
 
     def run_cmd(self):
         attack_id = self.cmd['attack_id']
-        self.msg_list = packet.signature_sniffer(self.TIMEOUT, signature = f"BAScope{attack_id}")
+        ticket = self.cmd['ticket']
+        signature = f"BAScope{ticket}_{attack_id}"
+        logger.info(f"signature: {signature}")
+        self.msg_list = packet.signature_sniffer(self.TIMEOUT, signature=signature)
         logger.info(f"[defense] Result: {self.msg_list}") 
 
 
@@ -41,6 +44,7 @@ class Defender(Processor):
             "who": "recv",
             "type": "report",
             "attack_id": self.cmd["attack_id"],
+            "ticket": self.ticket,
         }
 
         logger.info(f"[defense] data: {data}")
@@ -52,6 +56,7 @@ if __name__ == '__main__':
         "type" : "defense",
         "attack_id" : 1,
         "port": 445,
+        "ticket": 4,
     }
     a = Defender(msg)
     a.run_cmd()

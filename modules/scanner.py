@@ -39,7 +39,7 @@ class Scanner(Processor):
         data = {
             "type": "scan",
             "ports": self.parsed_res,
-            "ticket": self.cmd['ticket'],
+            "ticket": self.ticket,
         }
 
         logger.info(f"[scan] data: {data}")
