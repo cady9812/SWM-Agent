@@ -139,7 +139,7 @@ class SecuAttacker(Processor):
             "who": "send",
             "attack_id": self.cmd['attack_id'],
             "port": self.target_port,
-            "ticket": self.fd,
+            "ticket": self.ticket,
         }
 
         logger.info(f"[secu] data: {data}")
