@@ -1,5 +1,10 @@
+import os
 # Network Configuration
-SERVER_IP = "0.0.0.0"
+if "SERVER_IP" in os.environ:
+    SERVER_IP = os.environ["SERVER_IP"]
+else:
+    print("No Server Ip Found")
+    SERVER_IP = "0.0.0.0"
 WEB_PORT = 5000
 TCP_PORT = 9000
 AGENT_LOG_PORT = 5002
