@@ -113,7 +113,7 @@ class Agent(object):
         p = ProcessorFactory.create(cmd, self.id)
         p.run_cmd()
         tmp_sock = self._connect_to_server()
-        tmp_sock.send(bson.dumps({"type":"introduce", "detail":"tmp"}))
+        utility.send_with_size(tmp_sock, bson.dumps({"type":"introduce", "detail":"tmp"}))
         p.report(tmp_sock)
         tmp_sock.close()   # for report
         return

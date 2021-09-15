@@ -5,6 +5,11 @@ import time
 from log_config import get_custom_logger
 logger = get_custom_logger(__name__)
 
+import struct
+p32 = lambda x: struct.pack("<I", x)
+u32 = lambda x: struct.unpack("<I", x)[0]
+
+
 import datetime
 def current_time():
     return datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -130,6 +135,12 @@ def random_port_proxy(port = 0, agent = False, queue = None):
 
     c.close()
     s.close()
+
+
+def send_with_size(sock, msg):
+    payload = p32(len(msg)) + msg
+    sock.sendall(msg)
+
 
 if __name__ == "__main__":
     random_port_proxy()

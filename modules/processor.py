@@ -11,6 +11,7 @@ from config import *
 from log_config import get_custom_logger
 logger = get_custom_logger(__name__)
 
+from network import utility
 """
 <API 명세서>
 1. 공격 명령 내리기 : http://url/command/<int:id>
@@ -112,7 +113,7 @@ class Processor(metaclass = ABCMeta):
         try:
             payload = bson.dumps(data)
             logger.debug(f"[REPORT] len payload = {len(payload)}")
-            sock.sendall(payload) # send -> sendall for safety
+            utility.send_with_size(sock, payload)
         except:
             logger.fatal(f"{RED}Wrong socket!{END}")
             exit(1)
