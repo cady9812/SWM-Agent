@@ -80,7 +80,7 @@ class ProcMon(Processor):
         }
 
         logger.info(f"[procmon] attack_id: {data['attack_id']}")
-        logger.info(f"[procmon] ticket: {self.data['ticket']}")
+        logger.info(f"[procmon] ticket: {data['ticket']}")
         logger.info(f"[procmon] log length: {len(data['log'])}")
         self._report(sock, data)
 
