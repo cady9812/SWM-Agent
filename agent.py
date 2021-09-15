@@ -40,7 +40,7 @@ class Agent(object):
         "type": "introduce",
         "detail": "agent",
         }
-        self.sock.send(bson.dumps(introduce))
+        utility.send_with_size(self.sock, bson.dumps(introduce))
 
 
     def _scheduler(self, cmd):
