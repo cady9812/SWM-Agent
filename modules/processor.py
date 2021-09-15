@@ -110,7 +110,9 @@ class Processor(metaclass = ABCMeta):
 
     def _report(self, sock, data):
         try:
-            sock.send(bson.dumps(data))
+            payload = bson.dumps(data)
+            logger.debug(f"[REPORT] len payload = {len(payload)}")
+            sock.send(payload)
         except:
             logger.fatal(f"{RED}Wrong socket!{END}")
             exit(1)
