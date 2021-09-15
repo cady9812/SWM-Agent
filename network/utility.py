@@ -139,7 +139,7 @@ def random_port_proxy(port = 0, agent = False, queue = None):
 
 def send_with_size(sock, msg):
     payload = p32(len(msg)) + msg
-    sock.sendall(msg)
+    sock.sendall(payload)
 
 
 if __name__ == "__main__":
