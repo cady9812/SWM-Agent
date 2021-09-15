@@ -122,3 +122,5 @@ class Agent(object):
                     self.connect_to_server()
             except Exception as e:
                 logger.error(f"Wrong Cmd: {e}")
+                exit(1)
+
