@@ -27,9 +27,13 @@ class Agent(object):
     def check_cmd(self, fields):
         for field in fields:
             assert field in self.cmd
+    
+    def _connect_to_server(self):
+        return utility.remote(SERVER_IP, TCP_PORT)
 
     def connect_to_server(self):
-        self.sock = utility.remote(SERVER_IP, TCP_PORT)
+        logger.info("[agent] Connecting...")
+        self.sock = self._connect_to_server()
 
         # 본인이 Agent 임을 알리기 위해서
         introduce = {
@@ -99,28 +103,28 @@ class Agent(object):
         s_cmd = self._scheduler(cmd)
 
         if s_cmd:
-            p = Process(target = self._process_cmd, args = (s_cmd, ))
+            tmp_sock = self._connect_to_server()
+            tmp_sock.send(bson.dumps({"type":"introduce", "detail":"tmp"}))
+            p = Process(target = self._process_cmd, args = (s_cmd, tmp_sock))
             p.start()
 
 
-    def _process_cmd(self, cmd):
+    def _process_cmd(self, cmd, sock):
         # json 형태의 cmd 를 처리하고,
         # 서버로 결과를 보고함
         p = ProcessorFactory.create(cmd, self.id)
         p.run_cmd()
-        p.report(self.sock)
+        p.report(sock)
+        sock.close()   # for report
         return
 
-    def run(self):
-        logger.info("[agent] Connecting...")
-        self.connect_to_server()
 
+    def run(self):
+        self.connect_to_server()
         while True:
             try:
                 if self._run():
-                    logger.info("[agent] Re connecting...")
                     self.connect_to_server()
             except Exception as e:
                 logger.error(f"Wrong Cmd: {e}")
                 exit(1)
-
