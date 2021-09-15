@@ -15,12 +15,13 @@ from network.utility import make_path, current_time
 
 """
 {
-    "type" : "procmon",
-    "attack_id" : 13,
-    "download": url,
-},
+    "type": "endpoint",
+    "download": "다운로드링크(암호화된 api)",
+    "filename": "12.exe", // 한글이면 qweqwe.hwp 등등.. 확장자가 중요함
+    "attack_id": 12,
+}
 """
-class Procmon(Processor):
+class ProcMon(Processor):
     FIELDS = ["attack_id", "download"]
 
     def __init__(self, cmd):
@@ -72,9 +73,9 @@ class Procmon(Processor):
 
     def report(self, sock = None):
         data = {
-            "type": "procmon_log",
+            "type": "procmon",
             "attack_id": self.cmd["attack_id"],
-            "log": self.result, 
+            "log": self.result,
             "ticket": self.ticket,
         }
 
@@ -84,13 +85,13 @@ class Procmon(Processor):
 
 if __name__ == '__main__':
     msg = {
-        "type" : "procmon",
+        "type" : "endpoint",
         "attack_id" : 13,
         "download": "http://172.30.1.14:8000/12.exe",
         "filename": "12.exe",
         "ticket": 3,
     }
 
-    a = Procmon(msg)
+    a = ProcMon(msg)
     a.run_cmd()
     a.report()
