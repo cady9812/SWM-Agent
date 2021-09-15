@@ -73,7 +73,7 @@ class ProcMon(Processor):
 
     def report(self, sock = None):
         data = {
-            "type": "procmon",
+            "type": "endpoint",
             "attack_id": self.cmd["attack_id"],
             "log": self.result,
             "ticket": self.ticket,
