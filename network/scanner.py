@@ -25,9 +25,11 @@ def nmap_parser(xml_content):
     # json 형태로 바꿔 변수에 저장
     str_content = json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True)
     json_content = json.loads(str_content)
-
-    json_data = json_content["nmaprun"]["host"]["ports"]
-    json_data = json_data["port"]
+    try:
+        json_data = json_content["nmaprun"]["host"]["ports"]
+        json_data = json_data["port"]
+    except:
+        return []
     res = []
 
     # 나온 포트가 1개인 경우, list 형태로 만들어줌.
