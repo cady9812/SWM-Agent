@@ -73,7 +73,7 @@ class Agent(object):
         port = 0
         if cmd['type'] == 'defense':
             port = cmd['port']
-        elif cmd['type'] == 'attack_secu':
+        elif cmd['type'] == 'product_packet':
             port = cmd['dst_port']
 
         if port == 0:   # use ephermeral port
