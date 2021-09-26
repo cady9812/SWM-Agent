@@ -113,10 +113,12 @@ class Agent(object):
     def _process_cmd(self, cmd):
         # json 형태의 cmd 를 처리하고,
         # 서버로 결과를 보고함
-        p = ProcessorFactory.create(cmd, self.id)
-        p.run_cmd()
         tmp_sock = self._connect_to_server()
         utility.send_with_size(tmp_sock, bson.dumps({"type":"introduce", "detail":"tmp"}))
+        # introduce 이후에 바로 report 를 보내면 두 패킷이 합쳐질 수 있음
+        # 안전하게 처리하기 위해서 자기소개를 먼저하고, command 를 수행한 뒤에야 report 를 보내자
+        p = ProcessorFactory.create(cmd, self.id)
+        p.run_cmd()
         p.report(tmp_sock)
         tmp_sock.close()   # for report
         return
