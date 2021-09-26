@@ -52,26 +52,28 @@ def kill_process(ps_name):
 
 
 def pml_parse(binary_name):
-    logger.info(f"Try Parsing {binary_name}")
-    parse_result = []
-    file_lists = os.listdir(os.getcwd())
-    for files in file_lists: # 특정 용량 초과하면 out-1.pml, out-2.pml 이렇게 만들어진다.
-        if ".pml" not in files:
-            continue
+    try:
+        logger.info(f"Try Parsing {binary_name}")
+        parse_result = []
+        file_lists = os.listdir(os.getcwd())
+        for files in file_lists: # 특정 용량 초과하면 out-1.pml, out-2.pml 이렇게 만들어진다.
+            if ".pml" not in files:
+                continue
 
-        while True:
-            try:
-                f = open(files, "rb")
-                pml_reader = ProcmonLogsReader(f)
-                break
-            except:
-                f.close()
+            while True:
+                try:
+                    f = open(files, "rb")
+                    pml_reader = ProcmonLogsReader(f)
+                    break
+                except:
+                    f.close()
 
-        for i in range(len(pml_reader)):
-            events = next(pml_reader)         
-            if binary_name in str(events.process):
-                parse_result.append(events)
-    
+            for i in range(len(pml_reader)):
+                events = next(pml_reader)
+                if binary_name in str(events.process):
+                    parse_result.append(events)
+    except:
+        parse_result = []
     return parse_result
     
 
