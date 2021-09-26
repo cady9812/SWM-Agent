@@ -64,7 +64,10 @@ class Agent(object):
 
             return None
 
-        if cmd['type'] not in ['defense', 'attack_secu']:
+        # 아래의 타입들은 제외하면 port 걱정없이 실행가능함.
+        # 사실 agent 끼리 protocol 을 맞추는 게 더 좋은 방법이었겠지만,,
+        # epoll 서버에서 defense -> attack 을 순서로 준다는 보장을 해주기에,,
+        if cmd['type'] not in ['defense', 'product_packet']:
             return cmd
 
         port = 0
