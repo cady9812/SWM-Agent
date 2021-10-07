@@ -25,28 +25,46 @@ from network import utility, packet
     "attack_id" : 13
 },
 """
+
+"""
+exploit-db 시나리오
+{
+    "attack_id": 40210, // exploit-db 번호
+    "filename": 40210.py,
+    "type": "product_packet", // exploit-db 대신 product_packet 사용
+    "src_ip": "x.x.x.x"
+    "dst_ip": "y.y.y.y",
+    "usage": "python 40210.py 127.0.0.1"
+    "download": "http://~~:5555/ssploit/download" // X로 암호화된 api,
+    "dst_port": 7777,
+},
+"""
+
+'''
+"ticket" 키는 epoll server 에서 추가해줄 것임 (web 의 fd 번호)
+'''
 class SecuAttacker(Processor):
     FIELDS = ["malware", "dst_ip", "dst_port", "file_size", 
-              "download","usage", "attack_id"]
+            "download","usage", "attack_id"]
 
     def __init__(self, cmd):
         super().__init__(cmd)
-        self.check_cmd(self.FIELDS)
+        # self.check_cmd(self.FIELDS)
         attack_id = self.cmd["attack_id"]
         self.path = str(parent) + f"/tmp/ex{attack_id}.py"
+        if "filename" in cmd:
+            self.path = str(parent) + f"/tmp/{self.cmd['filename']}"
         logger.debug(f"[secu] file: {self.path}")
 
         return
-
 
     def get_packets_from_code(self):
         localhost = "127.0.0.1"
         if self.debug:
             pass
-
         else:
             self.xor_download(self.link, self.path)
-            assert os.path.getsize(self.path) == self.cmd['file_size']
+            # assert os.path.getsize(self.path) == self.cmd['file_size']
 
         # 공격코드를 localhost 로 보낼 것이기 때문에, 
         # 1. 해당 공격 패킷을 받고, 더미 응답을 보내줄 127.0.0.1:port 서버와
@@ -67,7 +85,7 @@ class SecuAttacker(Processor):
         lo_sniffer.start()
         queue2.get()     # sniff와 proxy 가 켜지기까지 기다림.
 
-        if self.cmd['malware']:
+        if self.cmd.get('malware', False):
             # random port 로 연 echo server 가 있기 때문에, 그곳으로 tcp 연결을 수행.
             tmp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             tmp.connect((localhost, port))
@@ -76,6 +94,12 @@ class SecuAttacker(Processor):
             # 매우 큰 사이즈의 악성코드라도 잘 보낼 수 있도록 os.write 을 사용함.
             # reference: https://stackoverflow.com/questions/8679547/send-large-files-over-socket-in-c?rq=1
             os.write(tmp.fileno(), open(self.path, "rb").read())
+
+        # exploit-db 시나리오
+        elif "filename" in self.cmd:
+            usage = self.cmd['usage']
+            # 일단 포트가 없이도 7777로 하드코딩 했을 것이기 때문에, 바로 실행
+            subprocess.call(usage, shell=True, cwd=str(parent) + "/tmp")
 
         else:
             # usage 에서 FILE, IP, PORT, SHELLCODE 가 필요한 경우, replace 를 통해 채워줌
@@ -96,7 +120,6 @@ class SecuAttacker(Processor):
 
         return list(msg_set)
 
-
     def run_cmd(self, debug = False):
         self.debug = debug
 
@@ -110,7 +133,9 @@ class SecuAttacker(Processor):
         msg_list = []
         sig_msg_list = []
 
-        if self.cmd['malware']:
+        # exploit-db 면 malware 를 안보내기 때문에
+        # get 과 default False 로 호환성을 유지함.
+        if self.cmd.get("malware", False):
             self.target_port = 0
 
         msg_list = self.get_packets_from_code()
@@ -159,7 +184,19 @@ if __name__ == '__main__':
         "ticket": 4,
     }
 
-    a = SecuAttacker(msg)
+    msg2 = {
+        "ticket": 3,
+        "attack_id": 40210, #// exploit-db 번호
+        "filename": "40210.py",
+        "type": "product_packet", #// exploit-db 대신 product_packet 사용
+        "src_ip": "x.x.x.x",
+        "dst_ip": "y.y.y.y",
+        "usage": "python 40210.py 127.0.0.1",
+        "download": "http://~~:5555/ssploit/download", # // X로 암호화된 api,
+        "dst_port": 7777,
+    }
+
+    a = SecuAttacker(msg2)
     a.run_cmd(debug = True)
     # a.run_cmd()
     a.report()

@@ -1,0 +1,2 @@
+print("😍")
+raise Exception("😍")
