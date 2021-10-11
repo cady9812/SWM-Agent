@@ -58,7 +58,7 @@ def signature_sniffer(timeout = 20.0, signature = "BAScope"):
         logger.info(f"[defense] signature sniffer on with {signature}")
 
     def log_func(pkt):
-        logger.info("[defense] packet received")
+        logger.info(f"[defense] packet received {pkt}")
     # 공격에 소요되는 시간, 패킷을 받는 시간을 고려하여 20초 동안 sniff 를 함
 
     result = sniff(
@@ -71,8 +71,16 @@ def signature_sniffer(timeout = 20.0, signature = "BAScope"):
 
     received_list = []
     for pkt in result:
-        assert 3 < len(pkt.layers())    # Eth/IP/TCP/Raw
-        payload = bytes(pkt[3])
+        # assert 3 < len(pkt.layers())    # Eth/IP/TCP/Raw
+        # payload = bytes(pkt[3])
+        num_layers = len(pkt.layers())
+        if num_layers > 3:
+            payload = bytes(pkt[3])
+        elif num_layers == 3:
+            payload = bytes(pkt[2])
+        elif num_layers == 2:
+            payload = bytes(pkt[1])
+
         payload = payload.replace(b_signature, b'')   # 시그니쳐 제거
         received_list.append(payload)
     
