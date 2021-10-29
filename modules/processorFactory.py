@@ -8,6 +8,7 @@ from secu_attacker import SecuAttacker
 from defender import Defender
 from scanner import Scanner
 from malware import Malware
+from procmon import ProcMon
 
 class ProcessorFactory(object):
     @classmethod
@@ -17,12 +18,14 @@ class ProcessorFactory(object):
             return Defender(cmd)
         elif cmd_type == "scan":
             return Scanner(cmd)
-        elif cmd_type == "attack_target":
+        elif cmd_type == "target":
             return TargetAttacker(cmd)
-        elif cmd_type == 'attack_secu':
+        elif cmd_type == 'product_packet':
             return SecuAttacker(cmd)
-        elif cmd_type == 'malware':
+        elif cmd_type == 'product_malware': # new
             return Malware(cmd)
+        elif cmd_type == 'endpoint':
+            return ProcMon(cmd)
         else:
             print("Not implemented")
             exit(1)

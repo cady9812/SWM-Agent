@@ -4,3 +4,5 @@ __pycache__
 .vscode
 *.xml
 *.log
+*.pml
+monitoring_res.txt

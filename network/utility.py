@@ -2,14 +2,22 @@ import socket
 import struct
 import time
 
-import json
-import logging
-import logging.config
-import pathlib
-log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
-config = json.load(open(str(log_config)))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
+
+import struct
+p32 = lambda x: struct.pack("<I", x)
+u32 = lambda x: struct.unpack("<I", x)[0]
+
+
+import datetime
+def current_time():
+    return datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+
+def make_path(base, add):
+    return str(base.joinpath(add))
+
 
 def recv_with_size(sock, timeout = 10.0):
     sock.settimeout(timeout) # recv timeout for 5s
@@ -56,12 +64,15 @@ def open_server(ip, port):
 
 def remote(ip, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    logger.info(f"Try remote({ip}:{port})")
     while True:
         try:
             s.connect((ip, port))
             break
-        except ConnectionRefusedError:
-            time.sleep(0.1)
+
+        # OSError for windows
+        except (ConnectionRefusedError, OSError):
+            time.sleep(2)
             pass
 
     return s
@@ -124,6 +135,12 @@ def random_port_proxy(port = 0, agent = False, queue = None):
 
     c.close()
     s.close()
+
+
+def send_with_size(sock, msg):
+    payload = p32(len(msg)) + msg
+    sock.sendall(payload)
+
 
 if __name__ == "__main__":
     random_port_proxy()

@@ -4,14 +4,8 @@ path = Path(__file__).parent.resolve()
 parent = path.parents[0]
 [sys.path.append(x) for x in map(str, [path, parent]) if x not in sys.path]
 
-import json
-import logging
-import logging.config
-import pathlib
-log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
-config = json.load(open(str(log_config)))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
 
 from processor import Processor 
 from network import packet
@@ -37,7 +31,10 @@ class Defender(Processor):
 
     def run_cmd(self):
         attack_id = self.cmd['attack_id']
-        self.msg_list = packet.signature_sniffer(self.TIMEOUT, signature = f"BAScope{attack_id}")
+        ticket = self.cmd['ticket']
+        signature = f"BAScope{ticket}_{attack_id}"
+        logger.info(f"signature: {signature}")
+        self.msg_list = packet.signature_sniffer(self.TIMEOUT, signature=signature)
         logger.info(f"[defense] Result: {self.msg_list}") 
 
 
@@ -47,6 +44,7 @@ class Defender(Processor):
             "who": "recv",
             "type": "report",
             "attack_id": self.cmd["attack_id"],
+            "ticket": self.ticket,
         }
 
         logger.info(f"[defense] data: {data}")
@@ -58,6 +56,7 @@ if __name__ == '__main__':
         "type" : "defense",
         "attack_id" : 1,
         "port": 445,
+        "ticket": 4,
     }
     a = Defender(msg)
     a.run_cmd()

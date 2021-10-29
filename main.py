@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import requests
 from agent import Agent
 from time import sleep
 
