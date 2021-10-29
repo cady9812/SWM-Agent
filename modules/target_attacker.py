@@ -59,7 +59,7 @@ class TargetAttacker(Processor):
         return
 
 
-    def report(self, sock):
+    def report(self, sock = None):
         # attack target 모드에서는 보고할 것이 없음.
         return
 
