@@ -2,14 +2,8 @@ import json
 import xmltodict
 from libnmap.process import NmapProcess
 
-import json
-import logging
-import logging.config
-import pathlib
-log_config = (pathlib.Path(__file__).parent.resolve().parents[0].joinpath("log_config.json"))
-config = json.load(open(str(log_config)))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+from log_config import get_custom_logger
+logger = get_custom_logger(__name__)
 
 # 옵션을 받아서 target 에 nmap 을 수행하고, 그 결과를 xml 형태로 반환함
 # usage: nmap_target("localhost", "-A", "-p 8000,22,90,445")
@@ -31,9 +25,11 @@ def nmap_parser(xml_content):
     # json 형태로 바꿔 변수에 저장
     str_content = json.dumps(xmltodict.parse(xml_content), indent=4, sort_keys=True)
     json_content = json.loads(str_content)
-
-    json_data = json_content["nmaprun"]["host"]["ports"]
-    json_data = json_data["port"]
+    try:
+        json_data = json_content["nmaprun"]["host"]["ports"]
+        json_data = json_data["port"]
+    except:
+        return []
     res = []
 
     # 나온 포트가 1개인 경우, list 형태로 만들어줌.

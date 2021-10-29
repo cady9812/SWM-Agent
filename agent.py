@@ -1,22 +1,20 @@
 from network import utility
-import json
 from time import sleep
-import requests
 
-import logging
-import logging.config
-config = json.load(open('log_config.json'))
-logging.config.dictConfig(config)
-logger = logging.getLogger(__name__)
+import log_config
+logger = log_config.get_custom_logger(__name__)
 
 from modules.processorFactory import ProcessorFactory
-import bson
+import bson, json
 from multiprocessing import Process
 
 from collections import defaultdict, deque
 
-SERVER_IP = "0.0.0.0"
-SERVER_PORT = 9000
+import config
+
+SERVER_IP = config.SERVER_IP
+TCP_PORT = config.TCP_PORT
+
 
 class Agent(object):
     BUF_SIZE = 0x1000
@@ -29,9 +27,20 @@ class Agent(object):
     def check_cmd(self, fields):
         for field in fields:
             assert field in self.cmd
+    
+    def _connect_to_server(self):
+        return utility.remote(SERVER_IP, TCP_PORT)
 
     def connect_to_server(self):
-        self.sock = utility.remote(SERVER_IP, SERVER_PORT)
+        logger.info("[agent] Connecting...")
+        self.sock = self._connect_to_server()
+
+        # 본인이 Agent 임을 알리기 위해서
+        introduce = {
+        "type": "introduce",
+        "detail": "agent",
+        }
+        utility.send_with_size(self.sock, bson.dumps(introduce))
 
 
     def _scheduler(self, cmd):
@@ -55,13 +64,16 @@ class Agent(object):
 
             return None
 
-        if cmd['type'] not in ['defense', 'attack_secu']:
+        # 아래의 타입들은 제외하면 port 걱정없이 실행가능함.
+        # 사실 agent 끼리 protocol 을 맞추는 게 더 좋은 방법이었겠지만,,
+        # epoll 서버에서 defense -> attack 을 순서로 준다는 보장을 해주기에,,
+        if cmd['type'] not in ['defense', 'product_packet']:
             return cmd
 
         port = 0
         if cmd['type'] == 'defense':
             port = cmd['port']
-        elif cmd['type'] == 'attack_secu':
+        elif cmd['type'] == 'product_packet':
             port = cmd['dst_port']
 
         if port == 0:   # use ephermeral port
@@ -84,7 +96,8 @@ class Agent(object):
 
         if not cmd:
             logger.info("[agent] TCP Server dead XXXXX")
-            exit(1)
+            return True
+            # exit(1)
 
         logger.debug(f"bson: {cmd}")
         cmd = bson.loads(cmd)
@@ -100,18 +113,23 @@ class Agent(object):
     def _process_cmd(self, cmd):
         # json 형태의 cmd 를 처리하고,
         # 서버로 결과를 보고함
+        tmp_sock = self._connect_to_server()
+        utility.send_with_size(tmp_sock, bson.dumps({"type":"introduce", "detail":"tmp"}))
+        # introduce 이후에 바로 report 를 보내면 두 패킷이 합쳐질 수 있음
+        # 안전하게 처리하기 위해서 자기소개를 먼저하고, command 를 수행한 뒤에야 report 를 보내자
         p = ProcessorFactory.create(cmd, self.id)
         p.run_cmd()
-        p.report(self.sock)
+        p.report(tmp_sock)
+        tmp_sock.close()   # for report
         return
 
-    def run(self):
-        logger.info("[agent] Connecting...")
-        self.connect_to_server()
 
+    def run(self):
+        self.connect_to_server()
         while True:
             try:
-                self._run()
+                if self._run():
+                    self.connect_to_server()
             except Exception as e:
                 logger.error(f"Wrong Cmd: {e}")
-
+                exit(1)

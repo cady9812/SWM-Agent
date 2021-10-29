@@ -4,3 +4,9 @@ scapy
 python-libnmap
 requests
 bson
+kvm
+python-logstash
+six
+psutil
+construct
+procmon_parser
